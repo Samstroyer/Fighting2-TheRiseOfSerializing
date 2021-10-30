@@ -7,10 +7,9 @@ namespace Fighting2_TheRiseOfSerializing
 {
     class Program
     {
-        PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(File.ReadAllText(@"..\data.json"));
-
         static void Main(string[] args)
         {
+            //PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(File.ReadAllText(@"..\data.json"));
             GreetUser();
 
 
@@ -109,6 +108,7 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void InspectGame()
         {
+            PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(File.ReadAllText(@"..\data.json"));
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -120,7 +120,10 @@ namespace Fighting2_TheRiseOfSerializing
                 string answer = Console.ReadLine();
                 if (answer.ToLower() == "c")
                 {
+                    foreach (Player p in deserializedPlayerData.players)
+                    {
 
+                    }
                 }
                 else if (answer.ToLower() == "i")
                 {

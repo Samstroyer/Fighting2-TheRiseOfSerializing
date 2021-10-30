@@ -35,57 +35,8 @@
             "description": "Super tank with good accuracy but bad damage"
         }
     ],
-    "items": [{
-            "name": "Plastic sword",
-            "attackModifier": "5",
-            "cost": "20",
-            "accModifier": "1.2",
-            "maxHPmodifier": "0",
-            "description": "Makes you look cool but is not the best"
-        },
-        {
-            "name": "Iron sword",
-            "attackModifier": "15",
-            "cost": "50",
-            "accModifier": "0.9",
-            "maxHPmodifier": "0",
-            "description": "Very heavy to swing so accuracy is lost"
-        },
-        {
-            "name": "Steady arms",
-            "attackModifier": "0",
-            "cost": "10",
-            "accModifier": "1.1",
-            "maxHPmodifier": "0",
-            "description": "Better grip gives higher accuracy on attacks"
-        },
-        {
-            "name": "Focused spirit",
-            "attackModifier": "10",
-            "cost": "80",
-            "accModifier": "1.5",
-            "maxHPmodifier": "0",
-            "description": "The aligned spirit helps you to hit attacks"
-        },
-        {
-            "name": "Throwing stone",
-            "attackModifier": "-1",
-            "cost": "5",
-            "accModifier": "1.05",
-            "maxHPmodifier": "0",
-            "description": "It is worse to use but gives a higher accuracy"
-        },
-        {
-            "name": "Health crystal",
-            "attackModifier": "0",
-            "cost": "20",
-            "accModifier": "0",
-            "maxHPmodifier": "10",
-            "description": "Helth crystals can store HP"
-        }
-    ],
-    "buffs": {
-        "defensive": [{
+    "shop": {
+        "defensiveCollection": [{
                 "name": "Healing scroll",
                 "baseHP": "10",
                 "percentHP": "0",
@@ -107,7 +58,7 @@
                 "description": "Gives all hp back but at a price"
             }
         ],
-        "offensive": [{
+        "offensiveCollection": [{
                 "name": "Lost scroll of damage",
                 "baseAttack": "15",
                 "percentAttack": "0",
@@ -127,6 +78,55 @@
                 "percentAttack": "5",
                 "cost": "30",
                 "description": "Increases your damage by percentage"
+            }
+        ],
+        "itemCollection": [{
+                "name": "Plastic sword",
+                "attackIncrease": "5",
+                "cost": "20",
+                "accModifier": "1.2",
+                "maxHPmodifier": "0",
+                "description": "Makes you look cool but is not the best"
+            },
+            {
+                "name": "Iron sword",
+                "attackIncrease": "15",
+                "cost": "50",
+                "accModifier": "0.9",
+                "maxHPmodifier": "0",
+                "description": "Very heavy to swing so accuracy is lost"
+            },
+            {
+                "name": "Chalk",
+                "attackIncrease": "0",
+                "cost": "10",
+                "accModifier": "1.1",
+                "maxHPmodifier": "0",
+                "description": "Better grip gives higher accuracy on attacks"
+            },
+            {
+                "name": "Focused spirit",
+                "attackIncrease": "10",
+                "cost": "80",
+                "accModifier": "1.5",
+                "maxHPmodifier": "0",
+                "description": "The aligned spirit helps you to hit attacks"
+            },
+            {
+                "name": "Throwing stone",
+                "attackIncrease": "-1",
+                "cost": "5",
+                "accModifier": "1.05",
+                "maxHPmodifier": "0",
+                "description": "Worse damage but gives a higher accuracy"
+            },
+            {
+                "name": "Health crystal",
+                "attackIncrease": "0",
+                "cost": "20",
+                "accModifier": "0",
+                "maxHPmodifier": "10",
+                "description": "Helth crystals can store HP"
             }
         ]
     }

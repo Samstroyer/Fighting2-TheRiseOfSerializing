@@ -27,7 +27,9 @@ namespace Fighting2_TheRiseOfSerializing
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Welcome to my fighter simulator!");
-            Console.WriteLine("Here you can bet money on champions, play in a fight and upgrade your champion!");
+            Console.WriteLine("In this game you are primarly going to play as a character and defeat enemies.");
+            Console.WriteLine("After defeating them you will get gold and enter the shop, buy stuff and get better.");
+            Console.WriteLine("The game in itself is an infinite scaling battle arena with lots of stuff to explore!");
             Console.WriteLine();
 
             UpdateLog();
@@ -76,6 +78,7 @@ namespace Fighting2_TheRiseOfSerializing
                 }
                 else if (answer.ToLower() == "g")
                 {
+                    Console.Clear();
                     InspectGame();
                 }
                 else
@@ -120,13 +123,19 @@ namespace Fighting2_TheRiseOfSerializing
                 string answer = Console.ReadLine();
                 if (answer.ToLower() == "c")
                 {
+                    Console.Clear();
                     foreach (Player p in deserializedPlayerData.players)
                     {
-
+                        Console.WriteLine($"Character {p.name}.");
+                        Console.WriteLine($"Base HP: {p.hp}");
+                        Console.WriteLine($"Base attack: {p.attack}");
+                        Console.WriteLine($"Base hit chance: {p.acc}%");
+                        Console.WriteLine();
                     }
                 }
                 else if (answer.ToLower() == "i")
                 {
+                    Console.Clear();
 
                 }
                 else if (answer.ToLower() == "m")
@@ -166,6 +175,6 @@ namespace Fighting2_TheRiseOfSerializing
         public string name { get; set; }
         public string hp { get; }
         public string attack { get; }
-        public string hitChance { get; }
+        public string acc { get; }
     }
 }

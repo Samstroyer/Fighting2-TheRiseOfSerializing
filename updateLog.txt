@@ -1,1 +1,3 @@
-1.0 : Fat-fingering is possibly resolved as Contains() is implemented in if statements.
+1.00 : Fat-fingering yes or no questions is not as devastating.
+1.01 : Added shop and items to it.
+1.02 : Added spells in the shop.

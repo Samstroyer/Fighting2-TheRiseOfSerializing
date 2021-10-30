@@ -1,34 +1,116 @@
 {
-    "players": [
-        {
+    "players": [{
             "name": "Samuel",
             "hp": "100",
             "attack": "10-15",
-            "hitChance": "75"
+            "acc": "65"
         },
         {
             "name": "Vladimir",
             "hp": "80",
             "attack": "6-20",
-            "hitChance": "85"
+            "acc": "70"
         },
         {
             "name": "Hedda",
             "hp": "150",
             "attack": "5-13",
-            "hitChance": "65"
+            "acc": "50"
         },
         {
             "name": "Caleb",
             "hp": "50",
             "attack": "20-25",
-            "hitChance": "85"
+            "acc": "75"
         },
         {
             "name": "Paul",
             "hp": "300",
             "attack": "2-7",
-            "hitChance": "100"
+            "acc": "90"
         }
-    ]
+    ],
+    "items": [{
+            "name": "Plastic sword",
+            "attackModifier": "5",
+            "cost": "20",
+            "accModifier": "1.2",
+            "maxHPmodifier": "0"
+        },
+        {
+            "name": "Iron sword",
+            "attackModifier": "15",
+            "cost": "50",
+            "accModifier": "0.9",
+            "maxHPmodifier": "0"
+        },
+        {
+            "name": "Iron sight",
+            "attackModifier": "0",
+            "cost": "10",
+            "accModifier": "1.1",
+            "maxHPmodifier": "0"
+        },
+        {
+            "name": "Aligned spirit",
+            "attackModifier": "10",
+            "cost": "80",
+            "accModifier": "1.5",
+            "maxHPmodifier": "0"
+        },
+        {
+            "name": "Throwing stone",
+            "attackModifier": "-1",
+            "cost": "5",
+            "accModifier": "1.05",
+            "maxHPmodifier": "0"
+        },
+        {
+            "name": "Health crystal",
+            "attackModifier": "0",
+            "cost": "20",
+            "accModifier": "0",
+            "maxHPmodifier": "10"
+        }
+    ],
+    "buffs": {
+        "defensive": [{
+                "name": "Healing scroll",
+                "baseHP": "10",
+                "percentHP": "0",
+                "cost": "20"
+            },
+            {
+                "name": "Regen potion",
+                "baseHP": "5",
+                "percentHP": "10",
+                "cost": "30"
+            },
+            {
+                "name": "Resurecter potion",
+                "baseHP": "0",
+                "percentHP": "100",
+                "cost": "150"
+            }
+        ],
+        "offensive": [{
+                "name": "Lost scroll of damage",
+                "baseAttack": "15",
+                "percentAttack": "0",
+                "cost": "30"
+            },
+            {
+                "name": "Potion of posion",
+                "baseAttack": "20",
+                "percentAttack": "0",
+                "cost": "40"
+            },
+            {
+                "name": "Focused spirit",
+                "baseAttack": "5",
+                "percentAttack": "5",
+                "cost": "30"
+            }
+        ]
+    }
 }

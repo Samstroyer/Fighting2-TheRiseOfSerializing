@@ -1,0 +1,3 @@
+Behöver tänka på att i items shop ska man, om man köper spells, få base hp EFTERÅT % hp inc
+Man ska kunna köpa allt i affären men det är random 3 items som spawnar där (kanske reroll för pengar?)
+Kanske inventory för spells, men man borde kunna se alla köpta items!

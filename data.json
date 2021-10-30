@@ -2,32 +2,37 @@
     "players": [{
             "name": "Samuel",
             "hp": "100",
-            "attack": "10-15",
-            "acc": "65"
+            "attack": "8-14",
+            "acc": "85",
+            "description": "All base stats are good"
         },
         {
             "name": "Vladimir",
             "hp": "80",
             "attack": "6-20",
-            "acc": "70"
+            "acc": "70",
+            "description": "Damage dealer with high accuracy but less HP"
         },
         {
             "name": "Hedda",
             "hp": "150",
             "attack": "5-13",
-            "acc": "50"
+            "acc": "50",
+            "description": "Tank with good damage but bad accuracy"
         },
         {
             "name": "Caleb",
             "hp": "50",
             "attack": "20-25",
-            "acc": "75"
+            "acc": "75",
+            "description": "High damage and accuracy but fragile"
         },
         {
             "name": "Paul",
             "hp": "300",
-            "attack": "2-7",
-            "acc": "90"
+            "attack": "2-5",
+            "acc": "90",
+            "description": "Super tank with good accuracy but bad damage"
         }
     ],
     "items": [{
@@ -35,42 +40,48 @@
             "attackModifier": "5",
             "cost": "20",
             "accModifier": "1.2",
-            "maxHPmodifier": "0"
+            "maxHPmodifier": "0",
+            "description": "Makes you look cool but is not the best"
         },
         {
             "name": "Iron sword",
             "attackModifier": "15",
             "cost": "50",
             "accModifier": "0.9",
-            "maxHPmodifier": "0"
+            "maxHPmodifier": "0",
+            "description": "Very heavy to swing so accuracy is lost"
         },
         {
-            "name": "Iron sight",
+            "name": "Steady arms",
             "attackModifier": "0",
             "cost": "10",
             "accModifier": "1.1",
-            "maxHPmodifier": "0"
+            "maxHPmodifier": "0",
+            "description": "Better grip gives higher accuracy on attacks"
         },
         {
-            "name": "Aligned spirit",
+            "name": "Focused spirit",
             "attackModifier": "10",
             "cost": "80",
             "accModifier": "1.5",
-            "maxHPmodifier": "0"
+            "maxHPmodifier": "0",
+            "description": "The aligned spirit helps you to hit attacks"
         },
         {
             "name": "Throwing stone",
             "attackModifier": "-1",
             "cost": "5",
             "accModifier": "1.05",
-            "maxHPmodifier": "0"
+            "maxHPmodifier": "0",
+            "description": "It is worse to use but gives a higher accuracy"
         },
         {
             "name": "Health crystal",
             "attackModifier": "0",
             "cost": "20",
             "accModifier": "0",
-            "maxHPmodifier": "10"
+            "maxHPmodifier": "10",
+            "description": "Helth crystals can store HP"
         }
     ],
     "buffs": {
@@ -78,38 +89,44 @@
                 "name": "Healing scroll",
                 "baseHP": "10",
                 "percentHP": "0",
-                "cost": "20"
+                "cost": "20",
+                "description": "Heals a set amount, bad for tanks"
             },
             {
                 "name": "Regen potion",
                 "baseHP": "5",
                 "percentHP": "10",
-                "cost": "30"
+                "cost": "30",
+                "description": "Heals a percentage, good for tanks"
             },
             {
                 "name": "Resurecter potion",
                 "baseHP": "0",
                 "percentHP": "100",
-                "cost": "150"
+                "cost": "150",
+                "description": "Gives all hp back but at a price"
             }
         ],
         "offensive": [{
                 "name": "Lost scroll of damage",
                 "baseAttack": "15",
                 "percentAttack": "0",
-                "cost": "30"
+                "cost": "30",
+                "description": "Increases your attack one round"
             },
             {
                 "name": "Potion of posion",
                 "baseAttack": "20",
                 "percentAttack": "0",
-                "cost": "40"
+                "cost": "40",
+                "description": "Poisons the enemy for 20 HP"
             },
             {
-                "name": "Focused spirit",
+                "name": "Strong spirit",
                 "baseAttack": "5",
                 "percentAttack": "5",
-                "cost": "30"
+                "cost": "30",
+                "description": "Increases your damage by percentage"
             }
         ]
     }

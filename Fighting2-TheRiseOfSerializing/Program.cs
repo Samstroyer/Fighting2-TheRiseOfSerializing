@@ -34,7 +34,7 @@ namespace Fighting2_TheRiseOfSerializing
 
             UpdateLog();
 
-            Menu();
+            Menu(true);
         }
 
         static void UpdateLog()
@@ -50,13 +50,16 @@ namespace Fighting2_TheRiseOfSerializing
 
             Console.ForegroundColor = ConsoleColor.White;
 
-            Menu();
+            Menu(true);
         }
 
-        static void Menu()
+        static void Menu(bool intro)
         {
-            Console.WriteLine("\nPress any key to continue!");
-            Console.ReadKey();
+            if (intro)
+            {
+                Console.WriteLine("\nPress any key to continue!");
+                Console.ReadKey();
+            }
             Console.Clear();
 
             while (true)
@@ -111,7 +114,10 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void InspectGame()
         {
-            PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(File.ReadAllText(@"..\data.json"));
+            string rawData = File.ReadAllText(@"..\data.json");
+            PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
+            ItemCollection deserializedItems = JsonSerializer.Deserialize<ItemCollection>(rawData);
+
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -126,12 +132,21 @@ namespace Fighting2_TheRiseOfSerializing
                     Console.Clear();
                     foreach (Player p in deserializedPlayerData.players)
                     {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine($"Character {p.name}.");
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
                         Console.WriteLine($"Base HP: {p.hp}");
                         Console.WriteLine($"Base attack: {p.attack}");
                         Console.WriteLine($"Base hit chance: {p.acc}%");
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.WriteLine($"Description: {p.description}.");
                         Console.WriteLine();
                     }
+
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("Press any key to exit");
+                    Console.ReadKey();
+                    Console.Clear();
                 }
                 else if (answer.ToLower() == "i")
                 {
@@ -140,7 +155,7 @@ namespace Fighting2_TheRiseOfSerializing
                 }
                 else if (answer.ToLower() == "m")
                 {
-                    Menu();
+                    Menu(false);
                 }
                 else
                 {
@@ -169,12 +184,27 @@ namespace Fighting2_TheRiseOfSerializing
     {
         public Player[] players { get; set; }
     }
-
     public class Player
     {
         public string name { get; set; }
-        public string hp { get; }
-        public string attack { get; }
-        public string acc { get; }
+        public string hp { get; set; }
+        public string attack { get; set; }
+        public string acc { get; set; }
+        public string description { get; set; }
+    }
+
+
+    public class ItemCollection
+    {
+        public Item[] items { get; set; }
+    }
+    public class Item
+    {
+        public string name { get; set; }
+        public string attackModifier { get; set; }
+        public string cost { get; set; }
+        public string accModifier { get; set; }
+        public string maxHPmodifier { get; set; }
+        public string description { get; set; }
     }
 }

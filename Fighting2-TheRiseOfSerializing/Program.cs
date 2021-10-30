@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 
 namespace Fighting2_TheRiseOfSerializing
 {
@@ -6,9 +9,19 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            
+            GreetUser();
+            
 
+            PlayerDecoder pDecoder = new PlayerDecoder();
         }
+
+        
+    }
+
+    public class PlayerDecoder
+    {
+        public Player[] Players { get; set; }
     }
 
     public class Player

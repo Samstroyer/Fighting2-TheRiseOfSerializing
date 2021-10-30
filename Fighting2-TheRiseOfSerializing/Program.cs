@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-<<<<<<< HEAD
 using System.Text;
-=======
->>>>>>> 78f1a9f0442c80ac224e12ae4d53e16691a7e980
+using System.Text.Json;
 using System.Text.Json;
 
 namespace Fighting2_TheRiseOfSerializing
@@ -12,13 +10,7 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
-<<<<<<< HEAD
-            
             GreetUser();
-            
-
-            PlayerDecoder pDecoder = new PlayerDecoder();
-=======
             string rawPlayerData = File.ReadAllText(@"..\players.json");
             PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawPlayerData);
 
@@ -26,10 +18,14 @@ namespace Fighting2_TheRiseOfSerializing
             {
                 System.Console.WriteLine(a.name);
             }
->>>>>>> 78f1a9f0442c80ac224e12ae4d53e16691a7e980
         }
 
-        
+        static void GreetUser()
+        {
+            Console.WriteLine("Welcome to my fighter simulator!");
+            Console.WriteLine("Here you can bet money on champions, play in a fight and upgrade your champion!");
+        }
+
     }
 
     public class PlayerDecoder

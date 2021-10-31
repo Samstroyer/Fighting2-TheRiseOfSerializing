@@ -11,6 +11,8 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
+            NewGame();
+
             GreetUser();
 
             Console.ReadLine();
@@ -291,8 +293,14 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void NewGame()
         {
-            string rawData = File.ReadAllText(@"..\data.json");
+            Player chosenCharacter = new Player();
+            int level = 1;
+            int experience = 0;
+            int difficulty = 1;
+            List<Item> inventory = new List<Item>();
+            List<Object> consumables = new List<Object>();
 
+            string rawData = File.ReadAllText(@"..\data.json");
             PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
             ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData);
             ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData);
@@ -308,36 +316,97 @@ namespace Fighting2_TheRiseOfSerializing
 
             var ch = ConsoleKey.B;
             int playerNumber = 1;
-            foreach (Player p in players)
+            bool chosing = true;
+
+            while (chosing)
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"Character {p.name}. ({playerNumber})");
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine($"Base HP: {p.hp}");
-                Console.WriteLine($"Base attack: {p.attack}");
-                Console.WriteLine($"Base hit chance: {p.acc}%");
-                Console.ForegroundColor = ConsoleColor.Gray;
-                Console.WriteLine($"Description: {p.description}.");
-                Console.WriteLine();
+                foreach (Player p in players)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"Character {p.name}. ({playerNumber})");
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine($"Base HP: {p.hp}");
+                    Console.WriteLine($"Base attack: {p.attack}");
+                    Console.WriteLine($"Base hit chance: {p.acc}%");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine($"Description: {p.description}.");
+                    Console.WriteLine();
+                    playerNumber++;
+                }
+                Console.WriteLine("Press the number corresponding to the character you want.");
+                ch = Console.ReadKey(false).Key;
+                Console.Clear();
+                switch (ch)
+                {
+                    case ConsoleKey.D1:
+                        chosenCharacter = players[0];
+                        chosing = false;
+                        break;
+                    case ConsoleKey.D2:
+                        chosenCharacter = players[1];
+                        chosing = false;
+                        break;
+                    case ConsoleKey.D3:
+                        chosenCharacter = players[2];
+                        chosing = false;
+                        break;
+                    case ConsoleKey.D4:
+                        chosenCharacter = players[3];
+                        chosing = false;
+                        break;
+                    case ConsoleKey.D5:
+                        chosenCharacter = players[4];
+                        chosing = false;
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine($"Can not process \"{ch}\" into a response!");
+                        System.Threading.Thread.Sleep(1000);
+                        Console.Clear();
+                        break;
+                }
             }
-            Console.WriteLine("Press the number corresponding to the character you want.");
-            ch = Console.ReadKey(false).Key;
             Console.Clear();
-            switch (ch)
+            Console.WriteLine($"You have now chosen {chosenCharacter.name}!");
+            Console.WriteLine("Let the journey begin!");
+
+            bool loop = true;
+            while (loop)
             {
-                case ConsoleKey.D1:
-                    break;
-                default:
-                    break;
+                Round(difficulty);
+                difficulty++;
             }
+        }
+
+        static bool Round(int difficulty)
+        {
+            Object enemies = new Object();
+            List<string> arenas = new List<string> {
+                "by old house",
+                "outside the village",
+                "on the way to next quest",
+                "on the way to the master",
+                "in a dungeon",
+                "encountering a boss"
+            };
+
+            Console.WriteLine($"You encounter enemies wandering {arenas[difficulty]}.");
+            Console.WriteLine("You now need to fight for survival!");
 
 
 
-
-
-
+            return true;
         }
     }
+
+    public class Enemies
+    {
+        static Random generator = new Random();
+        static string[] names = File.ReadAllLines(@"..\enemyNames.txt");
+        string name = names[generator.Next(0, names.Length)];
+
+    }
+
 
 
     public class PlayerCollection

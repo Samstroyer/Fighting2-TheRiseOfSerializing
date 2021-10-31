@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 namespace Fighting2_TheRiseOfSerializing
 {
@@ -9,18 +11,11 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
-            //PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(File.ReadAllText(@"..\data.json"));
             GreetUser();
-
-
 
             Console.ReadLine();
 
 
-            // foreach (Player a in deserializedPlayerData.players)
-            // {
-            //     System.Console.WriteLine(a.name);
-            // }
         }
 
         static void GreetUser()
@@ -72,7 +67,8 @@ namespace Fighting2_TheRiseOfSerializing
 
                 if (answer.ToLower() == "p")
                 {
-                    //StartGame();
+                    Console.Clear();
+                    StartGame();
                 }
                 else if (answer.ToLower() == "l")
                 {
@@ -116,9 +112,9 @@ namespace Fighting2_TheRiseOfSerializing
         {
             string rawData = File.ReadAllText(@"..\data.json");
             PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
-            Shop deserializedShopItems = JsonSerializer.Deserialize<Shop>(rawData);
-            DefensiveCollection deserializedShopDefensive = JsonSerializer.Deserialize<DefensiveCollection>(rawData);
-            OffensiveCollection deserializedShopOffensive = JsonSerializer.Deserialize<OffensiveCollection>(rawData);
+            ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData);
+            ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData);
+            ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData);
 
             while (true)
             {
@@ -153,70 +149,69 @@ namespace Fighting2_TheRiseOfSerializing
                 }
                 else if (answer.ToLower() == "i")
                 {
-                    var ch = ConsoleKey.B;
+                    var ch = ConsoleKey.A;
                     int page = 0;
                     Console.Clear();
 
                     do
                     {
+                        Console.ForegroundColor = ConsoleColor.Blue;
                         switch (page)
                         {
                             case 0:
                                 Console.WriteLine("Items:");
-                                foreach (ItemCollection collection in deserializedShopItems.itemCollection)
+                                Console.WriteLine();
+                                foreach (Item i in deserializedShopItems.items.items)
                                 {
-                                    foreach (Item i in collection.items)
-                                    {
-                                        Console.ForegroundColor = ConsoleColor.Cyan;
-                                        Console.WriteLine($"Item name: {i.name}.");
-                                        Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                        Console.WriteLine($"Accuracy modifier: {i.accModifier}%");
-                                        Console.WriteLine($"Attack increase: {i.attackIncrease}");
-                                        Console.WriteLine($"Max HP increase: {i.maxHPmodifier}");
-                                        Console.WriteLine($"Cost: {i.cost}");
-                                        Console.ForegroundColor = ConsoleColor.Gray;
-                                        Console.WriteLine($"Description: {i.description}.");
-                                        Console.WriteLine();
-                                    }
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine($"Item name: {i.name}.");
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.WriteLine($"Accuracy modifier: {i.accModifier}%");
+                                    Console.WriteLine($"Attack increase: {i.attackIncrease}");
+                                    Console.WriteLine($"Max HP increase: {i.maxHPmodifier}");
+                                    Console.WriteLine($"Cost: {i.cost}");
+                                    Console.ForegroundColor = ConsoleColor.Gray;
+                                    Console.WriteLine($"Description: {i.description}.");
+                                    Console.WriteLine("\n");
                                 }
                                 break;
-                                // case 1:
-                                //     Console.WriteLine("Defensive consumables:");
-                                //     foreach (Item i in deserializedItems.items)
-                                //     {
-                                //         Console.ForegroundColor = ConsoleColor.Cyan;
-                                //         Console.WriteLine($"Item name: {i.name}.");
-                                //         Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                //         Console.WriteLine($"Accuracy modifier: {i.accModifier}%");
-                                //         Console.WriteLine($"Attack increase: {i.attackIncrease}");
-                                //         Console.WriteLine($"Max HP increase: {i.maxHPmodifier}");
-                                //         Console.WriteLine($"Cost: {i.cost}");
-                                //         Console.ForegroundColor = ConsoleColor.Gray;
-                                //         Console.WriteLine($"Description: {i.description}.");
-                                //         Console.WriteLine();
-                                //     }
-                                //     break;
-                                // case 2:
-                                //     Console.WriteLine("Offensive consumables:");
-                                //     foreach (Item i in deserializedItems.items)
-                                //     {
-                                //         Console.ForegroundColor = ConsoleColor.Cyan;
-                                //         Console.WriteLine($"Item name: {i.name}.");
-                                //         Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                //         Console.WriteLine($"Accuracy modifier: {i.accModifier}%");
-                                //         Console.WriteLine($"Attack increase: {i.attackIncrease}");
-                                //         Console.WriteLine($"Max HP increase: {i.maxHPmodifier}");
-                                //         Console.WriteLine($"Cost: {i.cost}");
-                                //         Console.ForegroundColor = ConsoleColor.Gray;
-                                //         Console.WriteLine($"Description: {i.description}.");
-                                //         Console.WriteLine();
-                                //     }
-                                //     break;
+                            case 1:
+                                Console.WriteLine("Defensive consumables:");
+                                foreach (Defensive c in deserializedShopDefensive.defensive.defensive)
+                                {
+                                    Console.WriteLine();
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine($"Item name: {c.name}.");
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.WriteLine($"HP increase: {c.baseHP}");
+                                    Console.WriteLine($"HP increase percent : {c.percentHP}%");
+                                    Console.WriteLine($"Cost: {c.cost}");
+                                    Console.ForegroundColor = ConsoleColor.Gray;
+                                    Console.WriteLine($"Description: {c.description}.");
+                                    Console.WriteLine();
+                                }
+                                break;
+                            case 2:
+                                Console.WriteLine("Offensive consumables:");
+                                foreach (Offensive c in deserializedShopOffensive.offensive.offensive)
+                                {
+                                    Console.WriteLine();
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.WriteLine($"Item name: {c.name}.");
+                                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                    Console.WriteLine($"Attack base increase: {c.baseAttack}");
+                                    Console.WriteLine($"Attack % increase: {c.percentAttack}%");
+                                    Console.WriteLine($"Cost: {c.cost}");
+                                    Console.ForegroundColor = ConsoleColor.Gray;
+                                    Console.WriteLine($"Description: {c.description}.");
+                                    Console.WriteLine();
+                                }
+                                break;
                         }
 
                         Console.WriteLine();
                         Console.WriteLine($"You are on page {page + 1}/3");
-                        Console.WriteLine("Press the arrow keys to switch viewed page or enter to exit");
+                        Console.WriteLine("Press the arrow keys to switch viewed page or Enter to exit");
                         ch = Console.ReadKey(true).Key;
                         if (ch == ConsoleKey.LeftArrow)
                         {
@@ -240,6 +235,7 @@ namespace Fighting2_TheRiseOfSerializing
                                 page++;
                             }
                         }
+                        Console.Clear();
                     } while (ch != ConsoleKey.Enter);
                 }
                 else if (answer.ToLower() == "m")
@@ -256,17 +252,92 @@ namespace Fighting2_TheRiseOfSerializing
             }
         }
 
+        static void StartGame()
+        {
+            var ch = ConsoleKey.B;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("Welcome to the arena!");
+            Console.WriteLine("Here you play for rewards and are able to progress through the story!");
+            Console.WriteLine("If you feel unfamiliar with the game, please consider the game inspector tool (I).");
+            Console.WriteLine("Otherwise, load a journey (L) or start a new journey (N)!");
+
+            ch = Console.ReadKey(false).Key;
+
+            while (true)
+            {
+                if (ch == ConsoleKey.I)
+                {
+                    Console.Clear();
+                    InspectGame();
+                }
+                else if (ch == ConsoleKey.L)
+                {
+                    //LoadGame();
+                }
+                else if (ch == ConsoleKey.N)
+                {
+                    Console.Clear();
+                    NewGame();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine($"Can not process \"{ch}\" into a response!");
+                    System.Threading.Thread.Sleep(1000);
+                    Console.Clear();
+                }
+            }
+        }
+
+        static void NewGame()
+        {
+            string rawData = File.ReadAllText(@"..\data.json");
+
+            PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
+            ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData);
+            ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData);
+            ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData);
+
+            Player[] players = deserializedPlayerData.players;
+            ItemCollection shopItems = deserializedShopItems.items;
+            OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
+            DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
+
+            Console.WriteLine("Welcome to a new game, a new beginning!");
+            Console.WriteLine("Your next step to creating your journey is picking a character:");
+
+            var ch = ConsoleKey.B;
+            int playerNumber = 1;
+            foreach (Player p in players)
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"Character {p.name}. ({playerNumber})");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine($"Base HP: {p.hp}");
+                Console.WriteLine($"Base attack: {p.attack}");
+                Console.WriteLine($"Base hit chance: {p.acc}%");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine($"Description: {p.description}.");
+                Console.WriteLine();
+            }
+            Console.WriteLine("Press the number corresponding to the character you want.");
+            ch = Console.ReadKey(false).Key;
+            Console.Clear();
+            switch (ch)
+            {
+                case ConsoleKey.D1:
+                    break;
+                default:
+                    break;
+            }
+
+
+
+
+
+
+        }
     }
-
-
-
-
-
-
-
-
-
-
 
 
     public class PlayerCollection
@@ -282,15 +353,14 @@ namespace Fighting2_TheRiseOfSerializing
         public string description { get; set; }
     }
 
-    public class Shop
+    public class ShopItems
     {
-        public ItemCollection[] itemCollection { get; set; }
-        public OffensiveCollection[] defensiveCollection { get; set; }
-        public DefensiveCollection[] offensiveCollection { get; set; }
+        [JsonPropertyName("shop")]
+        public ItemCollection items { get; set; }
     }
     public class ItemCollection
     {
-        public Item[] items { get; set; }
+        public List<Item> items { get; set; }
     }
     public class Item
     {
@@ -302,31 +372,40 @@ namespace Fighting2_TheRiseOfSerializing
         public string description { get; set; }
     }
 
+    public class ShopOffensive
+    {
+        [JsonPropertyName("shop")]
+        public OffensiveCollection offensive { get; set; }
+    }
+
     public class OffensiveCollection
     {
-        public Offensive[] offensive { get; set; }
+        public List<Offensive> offensive { get; set; }
     }
     public class Offensive
     {
         public string name { get; set; }
-        public string attackIncrease { get; set; }
+        public string baseAttack { get; set; }
+        public string percentAttack { get; set; }
         public string cost { get; set; }
-        public string accModifier { get; set; }
-        public string maxHPmodifier { get; set; }
         public string description { get; set; }
+    }
+
+    public class ShopDefensive
+    {
+        [JsonPropertyName("shop")]
+        public DefensiveCollection defensive { get; set; }
     }
     public class DefensiveCollection
     {
-        public Defensive[] defensive { get; set; }
+        public List<Defensive> defensive { get; set; }
     }
     public class Defensive
     {
         public string name { get; set; }
-        public string attackIncrease { get; set; }
+        public string baseHP { get; set; }
+        public string percentHP { get; set; }
         public string cost { get; set; }
-        public string accModifier { get; set; }
-        public string maxHPmodifier { get; set; }
         public string description { get; set; }
     }
-
 }

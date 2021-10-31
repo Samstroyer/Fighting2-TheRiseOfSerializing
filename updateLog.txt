@@ -1,3 +1,2 @@
-1.00 : Fat-fingering yes or no questions is not as devastating.
-1.01 : Added shop and items to it.
-1.02 : Added spells in the shop.
+1.00 : Base game is launched!
+1.01 : Fat-fingering is forgiving on yes or no questions.

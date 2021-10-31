@@ -36,7 +36,7 @@
         }
     ],
     "shop": {
-        "defensiveCollection": [{
+        "defensive": [{
                 "name": "Healing scroll",
                 "baseHP": "10",
                 "percentHP": "0",
@@ -58,7 +58,7 @@
                 "description": "Gives all hp back but at a price"
             }
         ],
-        "offensiveCollection": [{
+        "offensive": [{
                 "name": "Lost scroll of damage",
                 "baseAttack": "15",
                 "percentAttack": "0",
@@ -80,19 +80,19 @@
                 "description": "Increases your damage by percentage"
             }
         ],
-        "itemCollection": [{
+        "items": [{
                 "name": "Plastic sword",
                 "attackIncrease": "5",
                 "cost": "20",
-                "accModifier": "1.2",
+                "accModifier": "20",
                 "maxHPmodifier": "0",
-                "description": "Makes you look cool but is not the best"
+                "description": "Makes you look dangerous but is not really"
             },
             {
                 "name": "Iron sword",
                 "attackIncrease": "15",
                 "cost": "50",
-                "accModifier": "0.9",
+                "accModifier": "-10",
                 "maxHPmodifier": "0",
                 "description": "Very heavy to swing so accuracy is lost"
             },
@@ -100,7 +100,7 @@
                 "name": "Chalk",
                 "attackIncrease": "0",
                 "cost": "10",
-                "accModifier": "1.1",
+                "accModifier": "10",
                 "maxHPmodifier": "0",
                 "description": "Better grip gives higher accuracy on attacks"
             },
@@ -108,7 +108,7 @@
                 "name": "Focused spirit",
                 "attackIncrease": "10",
                 "cost": "80",
-                "accModifier": "1.5",
+                "accModifier": "50",
                 "maxHPmodifier": "0",
                 "description": "The aligned spirit helps you to hit attacks"
             },
@@ -116,7 +116,7 @@
                 "name": "Throwing stone",
                 "attackIncrease": "-1",
                 "cost": "5",
-                "accModifier": "1.05",
+                "accModifier": "5",
                 "maxHPmodifier": "0",
                 "description": "Worse damage but gives a higher accuracy"
             },

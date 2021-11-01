@@ -11,7 +11,7 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
-            NewGame();
+            Round(1);
 
             GreetUser();
 
@@ -380,7 +380,8 @@ namespace Fighting2_TheRiseOfSerializing
 
         static bool Round(int difficulty)
         {
-            Object enemies = new Object();
+            Random generator = new Random();
+            Enemy[] enemies;
             List<string> arenas = new List<string> {
                 "by old house",
                 "outside the village",
@@ -390,6 +391,16 @@ namespace Fighting2_TheRiseOfSerializing
                 "encountering a boss"
             };
 
+            int spread = generator.Next(1, 2);
+            enemies = new Enemy[spread];
+
+            for (int i = 0; i < spread; i++)
+            {
+                enemies[i] = new Enemy();
+                enemies[i].baseAttack /= generator.Next(1, spread);
+                enemies[i].baseHP /= generator.Next(1, spread);
+            }
+
             Console.WriteLine($"You encounter enemies wandering {arenas[difficulty]}.");
             Console.WriteLine("You now need to fight for survival!");
 
@@ -397,17 +408,20 @@ namespace Fighting2_TheRiseOfSerializing
 
             return true;
         }
+
+
+
     }
 
-    public class Enemies
+
+    public class Enemy
     {
-        static Random generator = new Random();
-        static string[] names = File.ReadAllLines(@"..\enemyNames.txt");
-        string name = names[generator.Next(0, names.Length)];
-
+        public static Random generator = new Random();
+        public static string[] names = File.ReadAllLines(@"..\enemyNames.txt");
+        public string name = names[generator.Next(0, names.Length)];
+        public int baseHP = 50;
+        public int baseAttack = 5;
     }
-
-
 
     public class PlayerCollection
     {

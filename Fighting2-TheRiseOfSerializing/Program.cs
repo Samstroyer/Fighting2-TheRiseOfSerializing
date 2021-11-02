@@ -294,6 +294,7 @@ namespace Fighting2_TheRiseOfSerializing
         static void NewGame()
         {
             Player chosenCharacter = new Player();
+            bool alive = true;
             int level = 1;
             int experience = 0;
             int difficulty = 1;
@@ -373,7 +374,7 @@ namespace Fighting2_TheRiseOfSerializing
             bool loop = true;
             while (loop)
             {
-                Round(difficulty);
+                loop = Round(difficulty);
                 difficulty++;
             }
         }
@@ -383,7 +384,7 @@ namespace Fighting2_TheRiseOfSerializing
             Random generator = new Random();
             Enemy[] enemies;
             List<string> arenas = new List<string> {
-                "by old house",
+                "by an old house",
                 "outside the village",
                 "on the way to next quest",
                 "on the way to the master",
@@ -391,7 +392,7 @@ namespace Fighting2_TheRiseOfSerializing
                 "encountering a boss"
             };
 
-            int spread = generator.Next(1, 2);
+            int spread = generator.Next(1, difficulty);
             enemies = new Enemy[spread];
 
             for (int i = 0; i < spread; i++)
@@ -401,8 +402,22 @@ namespace Fighting2_TheRiseOfSerializing
                 enemies[i].baseHP /= generator.Next(1, spread);
             }
 
-            Console.WriteLine($"You encounter enemies wandering {arenas[difficulty]}.");
-            Console.WriteLine("You now need to fight for survival!");
+            Console.WriteLine($"You encounter strange activity while {arenas[difficulty]}.");
+            Console.WriteLine("You realise it is hostile, you now need to fight for survival!");
+
+            foreach (Enemy e in enemies)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine($"{e.name} has spawned.");
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.WriteLine($"Attack dmg: {e.baseAttack}");
+                Console.WriteLine($"HP: {e.baseHP}");
+                Console.WriteLine();
+            }
+
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.WriteLine("The fight will now begin! You are the first to strike.");
 
 
 
@@ -419,8 +434,8 @@ namespace Fighting2_TheRiseOfSerializing
         public static Random generator = new Random();
         public static string[] names = File.ReadAllLines(@"..\enemyNames.txt");
         public string name = names[generator.Next(0, names.Length)];
-        public int baseHP = 50;
-        public int baseAttack = 5;
+        public int baseHP = 75;
+        public int baseAttack = 10;
     }
 
     public class PlayerCollection

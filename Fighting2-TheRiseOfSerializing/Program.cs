@@ -11,7 +11,7 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
-            Round(1);
+            NewGame();
 
             GreetUser();
 
@@ -293,7 +293,7 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void NewGame()
         {
-            Player chosenCharacter = new Player();
+            Player chosenCharacter = new Player(); //Man får error om det inte är en new player, för ofc så tror inte visual att while(chosenCharacter!=Player) liknande loop ger en annan sak än player till slut...
             bool alive = true;
             int level = 1;
             int experience = 0;
@@ -308,6 +308,10 @@ namespace Fighting2_TheRiseOfSerializing
             ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData);
 
             Player[] players = deserializedPlayerData.players;
+            //TEST
+            chosenCharacter = players[0];
+            Round(1, chosenCharacter);
+            //END OF TEST
             ItemCollection shopItems = deserializedShopItems.items;
             OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
             DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
@@ -361,7 +365,7 @@ namespace Fighting2_TheRiseOfSerializing
                         break;
                     default:
                         Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine($"Can not process \"{ch}\" into a response!");
+                        Console.WriteLine($"Can not process \"{ch}\" into a character number!");
                         System.Threading.Thread.Sleep(1000);
                         Console.Clear();
                         break;
@@ -374,12 +378,12 @@ namespace Fighting2_TheRiseOfSerializing
             bool loop = true;
             while (loop)
             {
-                loop = Round(difficulty);
+                loop = Round(difficulty, chosenCharacter);
                 difficulty++;
             }
         }
 
-        static bool Round(int difficulty)
+        static bool Round(int difficulty, Player character)
         {
             Random generator = new Random();
             Enemy[] enemies;
@@ -389,7 +393,7 @@ namespace Fighting2_TheRiseOfSerializing
                 "on the way to next quest",
                 "on the way to the master",
                 "in a dungeon",
-                "encountering a boss"
+                "to a boss"
             };
 
             int spread = generator.Next(1, difficulty);
@@ -398,15 +402,15 @@ namespace Fighting2_TheRiseOfSerializing
             for (int i = 0; i < spread; i++)
             {
                 enemies[i] = new Enemy();
-                enemies[i].baseAttack /= generator.Next(1, spread);
                 enemies[i].baseHP /= generator.Next(1, spread);
             }
 
-            Console.WriteLine($"You encounter strange activity while {arenas[difficulty]}.");
-            Console.WriteLine("You realise it is hostile, you now need to fight for survival!");
+            Console.WriteLine($"You encounter strange activity while walking {arenas[difficulty]}.");
+            Console.WriteLine("You realise it is hostile activity, you now need to fight for survival!");
 
             foreach (Enemy e in enemies)
             {
+                Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine($"{e.name} has spawned.");
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -418,24 +422,94 @@ namespace Fighting2_TheRiseOfSerializing
             Console.ForegroundColor = ConsoleColor.White;
 
             Console.WriteLine("The fight will now begin! You are the first to strike.");
+            Console.WriteLine("\n");
 
+            //enemy setups
+            bool enemiesAlive = true;
 
+            //character - (player) - setups
+            string[] minMaxDamageString = character.attack.Split("-");
+            int[] minMaxDamageInt = new int[2];
+            for (int i = 0; i < minMaxDamageString.Length; i++)
+            {
+                minMaxDamageInt[i] = int.Parse(minMaxDamageString[i]);
+            }
 
+            int substage = 1;
+
+            while (enemiesAlive && int.Parse(character.hp) > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.WriteLine($"Round {substage} starts!");
+
+                foreach (Enemy e in enemies)
+                {
+                    int chanceToHit = generator.Next(0, 101);
+                    if (chanceToHit <= int.Parse(character.acc))
+                    {
+                        int characterDamageRoll = generator.Next(minMaxDamageInt[0], minMaxDamageInt[1] + 1);
+                        e.baseHP -= characterDamageRoll;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"{e.name} took {characterDamageRoll} damage! New HP: {e.baseHP}.");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"{character.name} missed the attack on {e.name}!");
+                    }
+                }
+
+                foreach (Enemy e in enemies)
+                {
+                    int chanceToHit = generator.Next(0, 101);
+                    if (chanceToHit <= e.acc)
+                    {
+                        string[] minMaxEnemyDamage = e.baseAttack.Split("-");
+                        int enemyDamage = generator.Next(int.Parse(minMaxEnemyDamage[0]), int.Parse(minMaxEnemyDamage[1]));
+                        int newCharacterHP = int.Parse(character.hp) - enemyDamage;
+                        character.hp = newCharacterHP.ToString();
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine($"{e.name} dealt {enemyDamage} damage to {character.name}! New HP: {character.hp}.");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"{e.name} missed the attack on {character.name}!");
+                    }
+                }
+
+                //Quick check if any enemy is alive - assuming everyone is dead. But if a hp is greater than zero it turns true
+                bool anyEnemyAlive = false;
+                foreach (Enemy e in enemies)
+                {
+                    if (e.baseHP > 0)
+                    {
+                        anyEnemyAlive = true;
+                    }
+                }
+                enemiesAlive = anyEnemyAlive;
+
+                Console.WriteLine();
+                substage++;
+            }
+
+            Console.ReadLine();
+
+            //should return a bool if you win or lose, if the game is supposed to continue or not (if you or enemies are dead or not)
             return true;
         }
-
-
-
     }
 
 
     public class Enemy
     {
-        public static Random generator = new Random();
-        public static string[] names = File.ReadAllLines(@"..\enemyNames.txt");
+        static Random generator = new Random();
+        static string[] names = File.ReadAllLines(@"..\enemyNames.txt");
         public string name = names[generator.Next(0, names.Length)];
         public int baseHP = 75;
-        public int baseAttack = 10;
+        public int acc = 90;
+        public string baseAttack = "5-9";
+        public string carriedGold = "0-10";
     }
 
     public class PlayerCollection

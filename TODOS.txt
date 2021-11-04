@@ -5,3 +5,6 @@ Kanske inventory för spells, men man borde kunna se alla köpta items!
 
 REMINDERS
 varje 3 rundor kan man RNG mässigt få en till extra enemy att slåss mot
+
+
+kanske behöver ge spelaren en potion i början av allting. equipment ska bara vara en txt fil. enkelt att kunna modda och läsa!

@@ -2,36 +2,46 @@
     "players": [{
             "name": "Samuel",
             "hp": "100",
+            "maxHp": "100",
             "attack": "8-14",
             "acc": "85",
+            "money": "5",
             "description": "All base stats are good"
         },
         {
             "name": "Vladimir",
             "hp": "80",
+            "maxHp": "80",
             "attack": "6-20",
             "acc": "70",
+            "money": "0",
             "description": "Damage dealer with high accuracy but less HP"
         },
         {
             "name": "Hedda",
             "hp": "150",
+            "maxHp": "150",
             "attack": "5-13",
             "acc": "50",
+            "money": "0",
             "description": "Tank with good damage but bad accuracy"
         },
         {
             "name": "Caleb",
             "hp": "50",
+            "maxHp": "50",
             "attack": "20-25",
             "acc": "75",
+            "money": "5",
             "description": "High damage and accuracy but fragile"
         },
         {
             "name": "Paul",
             "hp": "300",
+            "maxHp": "300",
             "attack": "2-5",
             "acc": "90",
+            "money": "0",
             "description": "Super tank with good accuracy but bad damage"
         }
     ],

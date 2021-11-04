@@ -11,13 +11,11 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
+            test();
             NewGame();
-
             GreetUser();
 
             Console.ReadLine();
-
-
         }
 
         static void GreetUser()
@@ -257,16 +255,17 @@ namespace Fighting2_TheRiseOfSerializing
         static void StartGame()
         {
             var ch = ConsoleKey.B;
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Welcome to the arena!");
-            Console.WriteLine("Here you play for rewards and are able to progress through the story!");
-            Console.WriteLine("If you feel unfamiliar with the game, please consider the game inspector tool (I).");
-            Console.WriteLine("Otherwise, load a journey (L) or start a new journey (N)!");
-
-            ch = Console.ReadKey(false).Key;
 
             while (true)
             {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Welcome to the arena!");
+                Console.WriteLine("Here you play for rewards and are able to progress through the story!");
+                Console.WriteLine("If you feel unfamiliar with the game, please consider the game inspector tool (I).");
+                Console.WriteLine("Otherwise, load a journey (L) or start a new journey (N) or exit to menu (M)!");
+
+                ch = Console.ReadKey(false).Key;
+
                 if (ch == ConsoleKey.I)
                 {
                     Console.Clear();
@@ -274,12 +273,25 @@ namespace Fighting2_TheRiseOfSerializing
                 }
                 else if (ch == ConsoleKey.L)
                 {
-                    //LoadGame();
+                    Console.Clear();
+                    bool succesfulLoad = false;
+                    succesfulLoad = LoadGame();
+                    if (!succesfulLoad)
+                    {
+                        Console.WriteLine("Unable to load saved data!");
+                        Console.WriteLine("A new game was started! (Old file at: \"old-save.txt\" in dir)");
+                        NewGame();
+                    }
                 }
                 else if (ch == ConsoleKey.N)
                 {
                     Console.Clear();
                     NewGame();
+                }
+                else if (ch == ConsoleKey.M)
+                {
+                    Console.Clear();
+                    Menu(true);
                 }
                 else
                 {
@@ -288,6 +300,8 @@ namespace Fighting2_TheRiseOfSerializing
                     System.Threading.Thread.Sleep(1000);
                     Console.Clear();
                 }
+
+                //PROBABLY NEED SMT HERE TO NOT DO WEIRD LOOPING!
             }
         }
 
@@ -295,8 +309,6 @@ namespace Fighting2_TheRiseOfSerializing
         {
             Player chosenCharacter = new Player(); //Man får error om det inte är en new player, för ofc så tror inte visual att while(chosenCharacter!=Player) liknande loop ger en annan sak än player till slut...
             bool alive = true;
-            int level = 1;
-            int experience = 0;
             int difficulty = 1;
             List<Item> inventory = new List<Item>();
             List<Object> consumables = new List<Object>();
@@ -308,10 +320,10 @@ namespace Fighting2_TheRiseOfSerializing
             ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData);
 
             Player[] players = deserializedPlayerData.players;
-            //TEST
-            chosenCharacter = players[0];
-            Round(1, chosenCharacter);
-            //END OF TEST
+
+            //DEBUG for when Test() be finished!
+            //Player f = Consumables(players[0]);
+
             ItemCollection shopItems = deserializedShopItems.items;
             OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
             DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
@@ -373,17 +385,51 @@ namespace Fighting2_TheRiseOfSerializing
             }
             Console.Clear();
             Console.WriteLine($"You have now chosen {chosenCharacter.name}!");
-            Console.WriteLine("Let the journey begin!");
+            Console.WriteLine("Press any key to begin!");
+            Console.ReadLine();
+            Console.Clear();
 
-            bool loop = true;
-            while (loop)
-            {
-                loop = Round(difficulty, chosenCharacter);
-                difficulty++;
-            }
+            chosenCharacter = Game(chosenCharacter, difficulty);
+            //Summarize
         }
 
-        static bool Round(int difficulty, Player character)
+        static Player Game(Player c, int diff)
+        {
+            bool alive = true;
+            var ch = ConsoleKey.B;
+
+            while (alive)
+            {
+                c = Round(diff, c);
+                switch (int.Parse(c.hp))
+                {
+                    case < 0:
+                        alive = false;
+                        break;
+                    default:
+                        alive = true;
+                        break;
+                }
+                if (alive)
+                {
+                    diff++;
+                    Console.WriteLine("You completed a round! Do you want to continue (C)?");
+                    ch = Console.ReadKey(false).Key;
+                    if (ch != ConsoleKey.C)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("You died!");
+                }
+            }
+
+            return c;
+        }
+
+        static Player Round(int difficulty, Player character)
         {
             Random generator = new Random();
             Enemy[] enemies;
@@ -420,6 +466,18 @@ namespace Fighting2_TheRiseOfSerializing
             }
 
             Console.ForegroundColor = ConsoleColor.White;
+
+            Console.WriteLine($"{character.name} current HP: {character.hp} / {character.maxHp}");
+            Console.WriteLine();
+            Console.WriteLine("If you are low on HP or need extra damage from items, open consumables.");
+            Console.WriteLine("Press any key to start the battle or press (C) to open consumables?");
+            var ch = Console.ReadKey(false).Key;
+            if (ch == ConsoleKey.C)
+            {
+                //character = Consumables(character, enemies);
+            }
+
+            Console.Clear();
 
             Console.WriteLine("The fight will now begin! You are the first to strike.");
             Console.WriteLine("\n");
@@ -461,20 +519,28 @@ namespace Fighting2_TheRiseOfSerializing
 
                 foreach (Enemy e in enemies)
                 {
-                    int chanceToHit = generator.Next(0, 101);
-                    if (chanceToHit <= e.acc)
+                    if (e.baseHP > 0)
                     {
-                        string[] minMaxEnemyDamage = e.baseAttack.Split("-");
-                        int enemyDamage = generator.Next(int.Parse(minMaxEnemyDamage[0]), int.Parse(minMaxEnemyDamage[1]));
-                        int newCharacterHP = int.Parse(character.hp) - enemyDamage;
-                        character.hp = newCharacterHP.ToString();
-                        Console.ForegroundColor = ConsoleColor.DarkYellow;
-                        Console.WriteLine($"{e.name} dealt {enemyDamage} damage to {character.name}! New HP: {character.hp}.");
+                        int chanceToHit = generator.Next(0, 101);
+                        if (chanceToHit <= e.acc)
+                        {
+                            string[] minMaxEnemyDamage = e.baseAttack.Split("-");
+                            int enemyDamage = generator.Next(int.Parse(minMaxEnemyDamage[0]), int.Parse(minMaxEnemyDamage[1]));
+                            int newCharacterHP = int.Parse(character.hp) - enemyDamage;
+                            character.hp = newCharacterHP.ToString();
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            Console.WriteLine($"{e.name} dealt {enemyDamage} damage to {character.name}! New HP: {character.hp}.");
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.WriteLine($"{e.name} missed the attack on {character.name}!");
+                        }
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine($"{e.name} missed the attack on {character.name}!");
+                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                        Console.WriteLine($"Enemy {e.name} can not attack! {e.name} is dead!");
                     }
                 }
 
@@ -493,12 +559,87 @@ namespace Fighting2_TheRiseOfSerializing
                 substage++;
             }
 
-            Console.ReadLine();
+            if (enemiesAlive)
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("You lost the battle!");
+                Console.WriteLine("Now you sadly have to try again, press any key to continue.");
+                Console.ReadLine();
+                return character;
+            }
+            else
+            {
+                int gold = 0;
+                foreach (Enemy e in enemies)
+                {
+                    string[] goldMinMaxString = e.carriedGold.Split("-");
+                    int[] goldMinMaxInt = new int[2];
+                    for (int i = 0; i < goldMinMaxInt.Length; i++)
+                    {
+                        goldMinMaxInt[i] = int.Parse(goldMinMaxString[i]);
+                    }
 
-            //should return a bool if you win or lose, if the game is supposed to continue or not (if you or enemies are dead or not)
-            return true;
+                    gold += generator.Next(goldMinMaxInt[0], goldMinMaxInt[1]);
+                }
+                character.money = gold.ToString();
+
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"You won the battle and got {gold} gold!");
+                Console.WriteLine("Press any key to continue.");
+                Console.ReadLine();
+                SaveGame(character, difficulty);
+                return character;
+            }
         }
+
+        static void SaveGame(Player c, int d)
+        {
+            string[] loadedData = File.ReadAllLines(@"..\save.txt");
+            List<string> save = new List<string>();
+
+            save[0] = $"{c.name},{c.hp},{c.money},{d}";
+            save[1] = loadedData[1];
+            save[2] = loadedData[2];
+            save[3] = loadedData[3];
+        }
+
+        static Player Shop(Player c)
+        {
+
+            return c;
+        }
+
+        static bool LoadGame()
+        {
+            bool success = false;
+            return success;
+        }
+
+        //static Player Consumables(Player c, Enemy[] e)
+        static void test()
+        {
+            string[] loadedData = File.ReadAllLines(@"..\save.txt");
+
+
+            //Jag kan göra det lite sketchy och räkna människo värden. Det är lite enklare då allt matchar men det e lite sketch som sagt. vill helst ha page starta från 0 till 2 istället för 1 till 3
+            int page = 1;
+
+            switch (page)
+            {
+                case 1:
+                    if (loadedData[1]) { }
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+
+            //return c;
+        }
+
     }
+
 
 
     public class Enemy
@@ -520,8 +661,10 @@ namespace Fighting2_TheRiseOfSerializing
     {
         public string name { get; set; }
         public string hp { get; set; }
+        public string maxHp { get; set; }
         public string attack { get; set; }
         public string acc { get; set; }
+        public string money { get; set; }
         public string description { get; set; }
     }
 
@@ -549,7 +692,6 @@ namespace Fighting2_TheRiseOfSerializing
         [JsonPropertyName("shop")]
         public OffensiveCollection offensive { get; set; }
     }
-
     public class OffensiveCollection
     {
         public List<Offensive> offensive { get; set; }

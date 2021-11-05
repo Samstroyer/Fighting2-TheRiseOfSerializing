@@ -11,6 +11,7 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("hey, started!");
             test();
             NewGame();
             GreetUser();
@@ -619,22 +620,107 @@ namespace Fighting2_TheRiseOfSerializing
         static void test()
         {
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
+            string rawData = File.ReadAllText(@"..\data.json");
 
+            ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData);
+            ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData);
+            ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData);
+
+            ItemCollection shopItems = deserializedShopItems.items;
+            OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
+            DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
 
             //Jag kan göra det lite sketchy och räkna människo värden. Det är lite enklare då allt matchar men det e lite sketch som sagt. vill helst ha page starta från 0 till 2 istället för 1 till 3
             int page = 1;
+            var ch = ConsoleKey.B;
+            bool done = false;
+            int consumableDamage = 0;
+            int consumableHeal = 0;
 
-            switch (page)
+            while (!done)
             {
-                case 1:
-                    if (loadedData[1]) { }
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-            }
+                switch (page)
+                {
+                    case 1:
+                        if (!loadedData[1].Contains("-"))
+                        {
+                            while (ch != ConsoleKey.LeftArrow || ch != ConsoleKey.RightArrow)
+                            {
+                                string dataModifiable = loadedData[1];
+                                List<int> useArrPositions = new List<int>();
 
+                                int index = 0;
+                                Console.WriteLine("Your items are:");
+                                foreach (char c in dataModifiable)
+                                {
+                                    Console.WriteLine();
+                                    Console.WriteLine($"Number: {index}");
+                                    Console.WriteLine($"Name: {defensiveItems.defensive[int.Parse(c.ToString())].name}");
+                                    Console.WriteLine($"Description: {defensiveItems.defensive[int.Parse(c.ToString())].description}");
+                                    index++;
+                                }
+
+                                Console.WriteLine("These are your defensive consumables!");
+                                Console.WriteLine("Press the number of the item you want to use that it is paired to!");
+                                Console.WriteLine($"Press arrow keys to switch page, {page}/3");
+                                Console.WriteLine("Press (E) to exit (also finish in this interface).");
+                                char tempChar = Console.ReadKey().KeyChar;
+
+                                if (char.IsDigit(tempChar))
+                                {
+                                    int tempInt = Convert.ToInt32(new string(tempChar, 1));
+
+                                    if (tempInt >= 0 && tempInt < dataModifiable.Length && !useArrPositions.Contains(tempInt))
+                                    {
+                                        useArrPositions.Add(tempInt);
+
+
+                                        //HITTA ETT SÄTT ATT TO BORT DET MAN ANVÄNT!
+                                    }
+
+                                }
+
+                                Console.Clear();
+                            }
+
+                            if (ch == ConsoleKey.RightArrow)
+                            {
+                                if (page == 3)
+                                {
+                                    page = 1;
+                                }
+                                else
+                                {
+                                    page++;
+                                }
+                            }
+                            else if (ch == ConsoleKey.LeftArrow)
+                            {
+                                if (page == 1)
+                                {
+                                    page = 3;
+                                }
+                                else
+                                {
+                                    page--;
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("You have nothing on this page, empty or corrupted!");
+                        }
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
+
+                Console.Clear();
+                Console.WriteLine("Your new hp is {c.hp}, and your instant damage will be {consumableDamage}");
+            }
             //return c;
         }
 

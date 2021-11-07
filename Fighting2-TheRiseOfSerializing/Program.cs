@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Fighting2_TheRiseOfSerializing
 {
@@ -309,7 +310,6 @@ namespace Fighting2_TheRiseOfSerializing
         static void NewGame()
         {
             Player chosenCharacter = new Player(); //Man får error om det inte är en new player, för ofc så tror inte visual att while(chosenCharacter!=Player) liknande loop ger en annan sak än player till slut...
-            bool alive = true;
             int difficulty = 1;
             List<Item> inventory = new List<Item>();
             List<Object> consumables = new List<Object>();
@@ -602,6 +602,20 @@ namespace Fighting2_TheRiseOfSerializing
             save[1] = loadedData[1];
             save[2] = loadedData[2];
             save[3] = loadedData[3];
+
+            File.WriteAllLines("save.json", save);
+        }
+        static void SaveGame(Player c, int d, string dataLine1, string dataLine2, string dataLine3)
+        {
+            string[] loadedData = File.ReadAllLines(@"..\save.txt");
+            List<string> save = new List<string>();
+
+            save[0] = $"{c.name},{c.hp},{c.money},{d}";
+            save[1] = dataLine1;
+            save[2] = dataLine2;
+            save[3] = dataLine3;
+
+            File.WriteAllLines("save.json", save);
         }
 
         static Player Shop(Player c)
@@ -616,19 +630,15 @@ namespace Fighting2_TheRiseOfSerializing
             return success;
         }
 
-        //static Player Consumables(Player c, Enemy[] e)
+        //static {Player, Enemy[]} UseConsumables(Player c, Enemy[] e)
         static void test()
         {
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
             string rawData = File.ReadAllText(@"..\data.json");
 
-            ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData);
-            ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData);
-            ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData);
-
-            ItemCollection shopItems = deserializedShopItems.items;
-            OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
-            DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
+            ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData); ItemCollection shopItems = deserializedShopItems.items;
+            ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData); OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
+            ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData); DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
 
             //Jag kan göra det lite sketchy och räkna människo värden. Det är lite enklare då allt matchar men det e lite sketch som sagt. vill helst ha page starta från 0 till 2 istället för 1 till 3
             int page = 1;
@@ -642,15 +652,15 @@ namespace Fighting2_TheRiseOfSerializing
                 switch (page)
                 {
                     case 1:
-                        if (!loadedData[1].Contains("-"))
+                        if (!loadedData[1].Contains("-") || loadedData[1].Length < 1)
                         {
+                            string dataModifiable = loadedData[1];
+                            List<int> usedItemsID = new List<int>();
+
                             while (ch != ConsoleKey.LeftArrow || ch != ConsoleKey.RightArrow)
                             {
-                                string dataModifiable = loadedData[1];
-                                List<int> useArrPositions = new List<int>();
-
                                 int index = 0;
-                                Console.WriteLine("Your items are:");
+                                Console.WriteLine("Your defensive items are:");
                                 foreach (char c in dataModifiable)
                                 {
                                     Console.WriteLine();
@@ -664,52 +674,68 @@ namespace Fighting2_TheRiseOfSerializing
                                 Console.WriteLine("Press the number of the item you want to use that it is paired to!");
                                 Console.WriteLine($"Press arrow keys to switch page, {page}/3");
                                 Console.WriteLine("Press (E) to exit (also finish in this interface).");
-                                char tempChar = Console.ReadKey().KeyChar;
+                                var tempChar = Console.ReadKey().Key;
 
-                                if (char.IsDigit(tempChar))
+                                if (tempChar == ConsoleKey.RightArrow)
                                 {
-                                    int tempInt = Convert.ToInt32(new string(tempChar, 1));
-
-                                    if (tempInt >= 0 && tempInt < dataModifiable.Length && !useArrPositions.Contains(tempInt))
+                                    if (page == 3)
                                     {
-                                        useArrPositions.Add(tempInt);
+                                        page = 1;
+                                    }
+                                    else
+                                    {
+                                        page++;
+                                    }
+                                    break;
+                                }
+                                else if (tempChar == ConsoleKey.LeftArrow)
+                                {
+                                    if (page == 1)
+                                    {
+                                        page = 3;
+                                    }
+                                    else
+                                    {
+                                        page--;
+                                    }
+                                    break;
+                                }
+                                else if (tempChar == ConsoleKey.E)
+                                {
+                                    Console.WriteLine("You have now saved and exited!");
+                                    //SaveGame(c, loadedData[1], loadedData[2], loadedData[3]);
+                                }
 
-
-                                        //HITTA ETT SÄTT ATT TO BORT DET MAN ANVÄNT!
+                                int tempInt;
+                                //Char för nummer har ett D framför sig, så måste ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2 karaktärer)
+                                string stringOfTempChar = tempChar.ToString();
+                                if (stringOfTempChar.Length == 2)
+                                {
+                                    char actualNumber = stringOfTempChar.ToCharArray()[1];
+                                    bool success = int.TryParse(actualNumber.ToString(), out tempInt);
+                                    if (success)
+                                    {
+                                        if (tempInt >= 0 && tempInt < dataModifiable.Length)
+                                        {
+                                            usedItemsID.Add(int.Parse(dataModifiable.ToCharArray()[tempInt].ToString()));
+                                            dataModifiable = dataModifiable.Remove(tempInt, 1);
+                                        }
                                     }
 
                                 }
 
+                                if (tempChar == ConsoleKey.E)
+                                {
+                                    done = true;
+                                }
                                 Console.Clear();
                             }
-
-                            if (ch == ConsoleKey.RightArrow)
-                            {
-                                if (page == 3)
-                                {
-                                    page = 1;
-                                }
-                                else
-                                {
-                                    page++;
-                                }
-                            }
-                            else if (ch == ConsoleKey.LeftArrow)
-                            {
-                                if (page == 1)
-                                {
-                                    page = 3;
-                                }
-                                else
-                                {
-                                    page--;
-                                }
-                            }
-
                         }
                         else
                         {
-                            Console.WriteLine("You have nothing on this page, empty or corrupted!");
+                            loadedData[1] = "-";
+                            Console.WriteLine("You have nothing here! It is empty or corrupted.");
+                            //SaveGame(c, loadedData[1], loadedData[2], loadedData[3]);
                         }
                         break;
                     case 2:

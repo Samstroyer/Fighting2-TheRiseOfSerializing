@@ -65,7 +65,7 @@
                 "baseHP": "0",
                 "percentHP": "100",
                 "cost": "150",
-                "description": "Gives all hp back but at a price"
+                "description": "Gives all hp back but at a hefty price"
             }
         ],
         "offensive": [{

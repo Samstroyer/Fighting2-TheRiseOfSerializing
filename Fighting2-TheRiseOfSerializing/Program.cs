@@ -636,6 +636,15 @@ namespace Fighting2_TheRiseOfSerializing
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
             string rawData = File.ReadAllText(@"..\data.json");
 
+            string allDefensiveItemsCopy = loadedData[1];
+            List<int> usedDefensiveItemsID = new List<int>();
+
+            string allOffensiveItemsCopy = loadedData[2];
+            List<int> usedOffensiveItemsID = new List<int>();
+
+            string allItemItemsCopy = loadedData[3];
+            List<int> usedItemItemsID = new List<int>();
+
             ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData); ItemCollection shopItems = deserializedShopItems.items;
             ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData); OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
             ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData); DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
@@ -644,8 +653,9 @@ namespace Fighting2_TheRiseOfSerializing
             int page = 1;
             var ch = ConsoleKey.B;
             bool done = false;
-            int consumableDamage = 0;
-            int consumableHeal = 0;
+            var tempChar = ConsoleKey.B;
+            int consumableTotalDamage = 0;
+            int consumableTotalHeal = 0;
 
             while (!done)
             {
@@ -654,14 +664,12 @@ namespace Fighting2_TheRiseOfSerializing
                     case 1:
                         if (!loadedData[1].Contains("-") || loadedData[1].Length < 1)
                         {
-                            string dataModifiable = loadedData[1];
-                            List<int> usedItemsID = new List<int>();
 
-                            while (ch != ConsoleKey.LeftArrow || ch != ConsoleKey.RightArrow)
+                            while (ch != ConsoleKey.LeftArrow || ch != ConsoleKey.RightArrow || ch != ConsoleKey.E)
                             {
                                 int index = 0;
                                 Console.WriteLine("Your defensive items are:");
-                                foreach (char c in dataModifiable)
+                                foreach (char c in allDefensiveItemsCopy)
                                 {
                                     Console.WriteLine();
                                     Console.WriteLine($"Number: {index}");
@@ -674,7 +682,7 @@ namespace Fighting2_TheRiseOfSerializing
                                 Console.WriteLine("Press the number of the item you want to use that it is paired to!");
                                 Console.WriteLine($"Press arrow keys to switch page, {page}/3");
                                 Console.WriteLine("Press (E) to exit (also finish in this interface).");
-                                var tempChar = Console.ReadKey().Key;
+                                tempChar = Console.ReadKey().Key;
 
                                 if (tempChar == ConsoleKey.RightArrow)
                                 {
@@ -702,12 +710,15 @@ namespace Fighting2_TheRiseOfSerializing
                                 }
                                 else if (tempChar == ConsoleKey.E)
                                 {
-                                    Console.WriteLine("You have now saved and exited!");
+                                    foreach () //item apply damage and heal
+                                        Console.WriteLine("You have now saved and exited!");
+                                    done = true;
                                     //SaveGame(c, loadedData[1], loadedData[2], loadedData[3]);
+                                    //return {c, e};
                                 }
 
-                                int tempInt;
                                 //Char för nummer har ett D framför sig, så måste ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2 karaktärer)
+                                int tempInt;
                                 string stringOfTempChar = tempChar.ToString();
                                 if (stringOfTempChar.Length == 2)
                                 {
@@ -715,18 +726,13 @@ namespace Fighting2_TheRiseOfSerializing
                                     bool success = int.TryParse(actualNumber.ToString(), out tempInt);
                                     if (success)
                                     {
-                                        if (tempInt >= 0 && tempInt < dataModifiable.Length)
+                                        if (tempInt >= 0 && tempInt < allDefensiveItemsCopy.Length)
                                         {
-                                            usedItemsID.Add(int.Parse(dataModifiable.ToCharArray()[tempInt].ToString()));
-                                            dataModifiable = dataModifiable.Remove(tempInt, 1);
+                                            usedDefensiveItemsID.Add(int.Parse(allDefensiveItemsCopy.ToCharArray()[tempInt].ToString()));
+                                            allDefensiveItemsCopy = allDefensiveItemsCopy.Remove(tempInt, 1);
                                         }
                                     }
 
-                                }
-
-                                if (tempChar == ConsoleKey.E)
-                                {
-                                    done = true;
                                 }
                                 Console.Clear();
                             }
@@ -738,11 +744,17 @@ namespace Fighting2_TheRiseOfSerializing
                             //SaveGame(c, loadedData[1], loadedData[2], loadedData[3]);
                         }
                         break;
+
+
                     case 2:
                         break;
+
+
                     case 3:
                         break;
+
                 }
+
 
                 Console.Clear();
                 Console.WriteLine("Your new hp is {c.hp}, and your instant damage will be {consumableDamage}");

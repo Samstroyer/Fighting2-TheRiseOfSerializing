@@ -630,7 +630,7 @@ namespace Fighting2_TheRiseOfSerializing
             return success;
         }
 
-        //static {Player, Enemy[]} UseConsumables(Player c, Enemy[] e)
+        //static {Player, Enemy[]} UseConsumables(Player c, Enemy[] e, int difficulty)
         static void test()
         {
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
@@ -665,23 +665,24 @@ namespace Fighting2_TheRiseOfSerializing
                         if (!loadedData[1].Contains("-") || loadedData[1].Length < 1)
                         {
 
-                            while (ch != ConsoleKey.LeftArrow || ch != ConsoleKey.RightArrow || ch != ConsoleKey.E)
+                            while (ch == ConsoleKey.LeftArrow || ch == ConsoleKey.RightArrow || ch == ConsoleKey.E)
                             {
+                                Console.WriteLine("Your defensive items are:\n");
+
                                 int index = 0;
-                                Console.WriteLine("Your defensive items are:");
                                 foreach (char c in allDefensiveItemsCopy)
                                 {
-                                    Console.WriteLine();
-                                    Console.WriteLine($"Number: {index}");
+                                    Console.WriteLine($"Selection #: {index}");
                                     Console.WriteLine($"Name: {defensiveItems.defensive[int.Parse(c.ToString())].name}");
                                     Console.WriteLine($"Description: {defensiveItems.defensive[int.Parse(c.ToString())].description}");
+                                    Console.WriteLine();
                                     index++;
                                 }
 
                                 Console.WriteLine("These are your defensive consumables!");
                                 Console.WriteLine("Press the number of the item you want to use that it is paired to!");
                                 Console.WriteLine($"Press arrow keys to switch page, {page}/3");
-                                Console.WriteLine("Press (E) to exit (also finish in this interface).");
+                                Console.WriteLine("Press (E) to exit (also finish this interface).");
                                 tempChar = Console.ReadKey().Key;
 
                                 if (tempChar == ConsoleKey.RightArrow)
@@ -694,7 +695,6 @@ namespace Fighting2_TheRiseOfSerializing
                                     {
                                         page++;
                                     }
-                                    break;
                                 }
                                 else if (tempChar == ConsoleKey.LeftArrow)
                                 {
@@ -706,7 +706,6 @@ namespace Fighting2_TheRiseOfSerializing
                                     {
                                         page--;
                                     }
-                                    break;
                                 }
                                 else if (tempChar == ConsoleKey.E)
                                 {
@@ -714,7 +713,7 @@ namespace Fighting2_TheRiseOfSerializing
                                     done = true;
                                 }
 
-                                //Char för nummer har ett D framför sig, så måste ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2 karaktärer)
+                                //eftersom nummer i consoleKey har ett D framför sig..., så måste man ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2+ karaktärer)
                                 int tempInt;
                                 string stringOfTempChar = tempChar.ToString();
                                 if (stringOfTempChar.Length == 2)
@@ -729,8 +728,8 @@ namespace Fighting2_TheRiseOfSerializing
                                             allDefensiveItemsCopy = allDefensiveItemsCopy.Remove(tempInt, 1);
                                         }
                                     }
-
                                 }
+
                                 Console.Clear();
                             }
                         }
@@ -738,18 +737,141 @@ namespace Fighting2_TheRiseOfSerializing
                         {
                             loadedData[1] = "-";
                             Console.WriteLine("You have nothing here! It is empty or corrupted.");
-                            //SaveGame(c, loadedData[1], loadedData[2], loadedData[3]);
+                        }
+                        break;
+
+                    case 2:
+                        if (!loadedData[2].Contains("-") || loadedData[2].Length < 1)
+                        {
+                            while (ch == ConsoleKey.LeftArrow || ch == ConsoleKey.RightArrow || ch == ConsoleKey.E)
+                            {
+                                Console.WriteLine("Your offensive items are:\n");
+
+                                int index = 0;
+                                foreach (char c in allOffensiveItemsCopy)
+                                {
+                                    Console.WriteLine($"Selection #: {index}");
+                                    Console.WriteLine($"Name: {offensiveItems.offensive[int.Parse(c.ToString())].name}");
+                                    Console.WriteLine($"Description: {offensiveItems.offensive[int.Parse(c.ToString())].description}");
+                                    Console.WriteLine();
+                                    index++;
+                                }
+
+                                Console.WriteLine("These are your offensive consumables!");
+                                Console.WriteLine("Press the number of the item you want to use that it is paired to!");
+                                Console.WriteLine($"Press arrow keys to switch page, {page}/3");
+                                Console.WriteLine("Press (E) to exit (also finish this interface).");
+                                tempChar = Console.ReadKey().Key;
+
+                                if (tempChar == ConsoleKey.RightArrow)
+                                {
+                                    if (page == 3)
+                                    {
+                                        page = 1;
+                                    }
+                                    else
+                                    {
+                                        page++;
+                                    }
+                                }
+                                else if (tempChar == ConsoleKey.LeftArrow)
+                                {
+                                    if (page == 1)
+                                    {
+                                        page = 3;
+                                    }
+                                    else
+                                    {
+                                        page--;
+                                    }
+                                }
+                                else if (tempChar == ConsoleKey.E)
+                                {
+                                    Console.WriteLine("You have now saved and exited!");
+                                    done = true;
+                                }
+
+                                //eftersom nummer i consoleKey har ett D framför sig..., så måste man ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2+ karaktärer)
+                                int tempInt;
+                                string stringOfTempChar = tempChar.ToString();
+                                if (stringOfTempChar.Length == 2)
+                                {
+                                    char actualNumber = stringOfTempChar.ToCharArray()[1];
+                                    bool success = int.TryParse(actualNumber.ToString(), out tempInt);
+                                    if (success)
+                                    {
+                                        if (tempInt >= 0 && tempInt < allOffensiveItemsCopy.Length)
+                                        {
+                                            usedOffensiveItemsID.Add(int.Parse(allOffensiveItemsCopy.ToCharArray()[tempInt].ToString()));
+                                            allOffensiveItemsCopy = allOffensiveItemsCopy.Remove(tempInt, 1);
+                                        }
+                                    }
+                                }
+
+                                Console.Clear();
+                            }
+                        }
+                        else
+                        {
+                            loadedData[1] = "-";
+                            Console.WriteLine("You have nothing here! It is empty or corrupted.");
                         }
                         break;
 
 
-                    case 2:
-                        break;
-
-
                     case 3:
-                        break;
+                        while (ch == ConsoleKey.LeftArrow || ch == ConsoleKey.RightArrow || ch == ConsoleKey.E)
+                        {
+                            Console.WriteLine("Your items are:\n");
 
+                            int index = 0;
+                            foreach (char c in allItemItemsCopy)
+                            {
+                                Item currentItem = shopItems.items[int.Parse(c.ToString())];
+                                Console.WriteLine($"Item #: {index}");
+                                Console.WriteLine($"Name: {currentItem.name}");
+                                Console.WriteLine($"Accuracy modifier: {currentItem.accModifier}%");
+                                Console.WriteLine($"Attack modifier: {currentItem.attackIncrease}");
+                                Console.WriteLine($"Max HP modifier: {currentItem.maxHPmodifier}");
+                                Console.WriteLine($"Description: {currentItem.description}");
+                                Console.WriteLine();
+                                index++;
+                            }
+
+                            Console.WriteLine("These are all your items!");
+                            Console.WriteLine($"Press arrow keys to switch page, {page}/3");
+                            Console.WriteLine("Press (E) to exit (also finish this interface).");
+                            tempChar = Console.ReadKey().Key;
+
+                            if (tempChar == ConsoleKey.RightArrow)
+                            {
+                                if (page == 3)
+                                {
+                                    page = 1;
+                                }
+                                else
+                                {
+                                    page++;
+                                }
+                            }
+                            else if (tempChar == ConsoleKey.LeftArrow)
+                            {
+                                if (page == 1)
+                                {
+                                    page = 3;
+                                }
+                                else
+                                {
+                                    page--;
+                                }
+                            }
+                            else if (tempChar == ConsoleKey.E)
+                            {
+                                Console.WriteLine("You have now saved and exited!");
+                                done = true;
+                            }
+                        }
+                        break;
                 }
 
                 foreach (int i in usedDefensiveItemsID)  //item apply damage and heal 
@@ -757,7 +879,14 @@ namespace Fighting2_TheRiseOfSerializing
                     consumableTotalHeal *= int.Parse(defensiveItems.defensive[i].percentHP);
                     consumableTotalHeal += int.Parse(defensiveItems.defensive[i].baseHP);
                 }
+                foreach (int i in usedOffensiveItemsID)  //item apply damage and heal 
+                {
+                    consumableTotalDamage *= int.Parse(offensiveItems.offensive[i].percentAttack);
+                    consumableTotalHeal += int.Parse(offensiveItems.offensive[i].baseAttack);
+                }
 
+
+                //SaveGame(c, difficulty, allOffensiveItemsCopy, allDefensiveItemsCopy, allItemItemsCopy);
 
                 Console.Clear();
                 Console.WriteLine("Your new hp is {c.hp}, and your instant damage will be {consumableDamage}");

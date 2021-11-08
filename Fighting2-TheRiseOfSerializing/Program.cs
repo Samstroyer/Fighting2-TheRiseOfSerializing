@@ -710,11 +710,8 @@ namespace Fighting2_TheRiseOfSerializing
                                 }
                                 else if (tempChar == ConsoleKey.E)
                                 {
-                                    foreach () //item apply damage and heal
-                                        Console.WriteLine("You have now saved and exited!");
+                                    Console.WriteLine("You have now saved and exited!");
                                     done = true;
-                                    //SaveGame(c, loadedData[1], loadedData[2], loadedData[3]);
-                                    //return {c, e};
                                 }
 
                                 //Char för nummer har ett D framför sig, så måste ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2 karaktärer)
@@ -753,6 +750,12 @@ namespace Fighting2_TheRiseOfSerializing
                     case 3:
                         break;
 
+                }
+
+                foreach (int i in usedDefensiveItemsID)  //item apply damage and heal 
+                {
+                    consumableTotalHeal *= int.Parse(defensiveItems.defensive[i].percentHP);
+                    consumableTotalHeal += int.Parse(defensiveItems.defensive[i].baseHP);
                 }
 
 

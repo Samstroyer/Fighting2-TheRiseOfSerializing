@@ -651,7 +651,6 @@ namespace Fighting2_TheRiseOfSerializing
 
             //Jag kan göra det lite sketchy och räkna människo värden. Det är lite enklare då allt matchar men det e lite sketch som sagt. vill helst ha page starta från 0 till 2 istället för 1 till 3
             int page = 1;
-            var ch = ConsoleKey.B;
             bool done = false;
             var tempChar = ConsoleKey.B;
             int consumableTotalDamage = 0;
@@ -661,11 +660,15 @@ namespace Fighting2_TheRiseOfSerializing
             {
                 switch (page)
                 {
-                    case 1:
-                        if (!loadedData[1].Contains("-") || loadedData[1].Length < 1)
-                        {
 
-                            while (ch == ConsoleKey.LeftArrow || ch == ConsoleKey.RightArrow || ch == ConsoleKey.E)
+
+
+
+                    case 1:
+                        if (!allDefensiveItemsCopy.Contains("-") || !allDefensiveItemsCopy.Contains(""))
+                        {
+                            tempChar = ConsoleKey.B;
+                            while (tempChar != ConsoleKey.LeftArrow && tempChar != ConsoleKey.RightArrow && tempChar != ConsoleKey.E)
                             {
                                 Console.WriteLine("Your defensive items are:\n");
 
@@ -710,6 +713,7 @@ namespace Fighting2_TheRiseOfSerializing
                                 else if (tempChar == ConsoleKey.E)
                                 {
                                     Console.WriteLine("You have now saved and exited!");
+                                    Thread.Sleep(1000);
                                     done = true;
                                 }
 
@@ -736,14 +740,53 @@ namespace Fighting2_TheRiseOfSerializing
                         else
                         {
                             loadedData[1] = "-";
+                            Console.Clear();
                             Console.WriteLine("You have nothing here! It is empty or corrupted.");
+                            Console.WriteLine($"Press arrow keys to switch page, {page}/3");
+                            Console.WriteLine("Press (E) to exit (also finish this interface).");
+                            tempChar = Console.ReadKey().Key;
+
+                            if (tempChar == ConsoleKey.RightArrow)
+                            {
+                                if (page == 3)
+                                {
+                                    page = 1;
+                                }
+                                else
+                                {
+                                    page++;
+                                }
+                            }
+                            else if (tempChar == ConsoleKey.LeftArrow)
+                            {
+                                if (page == 1)
+                                {
+                                    page = 3;
+                                }
+                                else
+                                {
+                                    page--;
+                                }
+                            }
+                            else if (tempChar == ConsoleKey.E)
+                            {
+                                Console.WriteLine("You have now saved and exited!");
+                                Thread.Sleep(1000);
+                                done = true;
+                            }
                         }
                         break;
 
+
+
+
+
+
                     case 2:
-                        if (!loadedData[2].Contains("-") || loadedData[2].Length < 1)
+                        tempChar = ConsoleKey.B;
+                        if (!allOffensiveItemsCopy.Contains("-") || allOffensiveItemsCopy.Length < 1)
                         {
-                            while (ch == ConsoleKey.LeftArrow || ch == ConsoleKey.RightArrow || ch == ConsoleKey.E)
+                            while (tempChar != ConsoleKey.LeftArrow && tempChar != ConsoleKey.RightArrow && tempChar != ConsoleKey.E)
                             {
                                 Console.WriteLine("Your offensive items are:\n");
 
@@ -788,6 +831,7 @@ namespace Fighting2_TheRiseOfSerializing
                                 else if (tempChar == ConsoleKey.E)
                                 {
                                     Console.WriteLine("You have now saved and exited!");
+                                    Thread.Sleep(1000);
                                     done = true;
                                 }
 
@@ -815,30 +859,6 @@ namespace Fighting2_TheRiseOfSerializing
                         {
                             loadedData[1] = "-";
                             Console.WriteLine("You have nothing here! It is empty or corrupted.");
-                        }
-                        break;
-
-
-                    case 3:
-                        while (ch == ConsoleKey.LeftArrow || ch == ConsoleKey.RightArrow || ch == ConsoleKey.E)
-                        {
-                            Console.WriteLine("Your items are:\n");
-
-                            int index = 0;
-                            foreach (char c in allItemItemsCopy)
-                            {
-                                Item currentItem = shopItems.items[int.Parse(c.ToString())];
-                                Console.WriteLine($"Item #: {index}");
-                                Console.WriteLine($"Name: {currentItem.name}");
-                                Console.WriteLine($"Accuracy modifier: {currentItem.accModifier}%");
-                                Console.WriteLine($"Attack modifier: {currentItem.attackIncrease}");
-                                Console.WriteLine($"Max HP modifier: {currentItem.maxHPmodifier}");
-                                Console.WriteLine($"Description: {currentItem.description}");
-                                Console.WriteLine();
-                                index++;
-                            }
-
-                            Console.WriteLine("These are all your items!");
                             Console.WriteLine($"Press arrow keys to switch page, {page}/3");
                             Console.WriteLine("Press (E) to exit (also finish this interface).");
                             tempChar = Console.ReadKey().Key;
@@ -868,8 +888,75 @@ namespace Fighting2_TheRiseOfSerializing
                             else if (tempChar == ConsoleKey.E)
                             {
                                 Console.WriteLine("You have now saved and exited!");
+                                Thread.Sleep(1000);
                                 done = true;
                             }
+                        }
+                        break;
+
+
+                    case 3:
+                        if (!loadedData[3].Contains("-") || loadedData[3].Length < 1)
+                        {
+                            while (!(tempChar == ConsoleKey.LeftArrow || tempChar == ConsoleKey.RightArrow || tempChar == ConsoleKey.E))
+                            {
+                                Console.WriteLine("Your items are:\n");
+
+                                int index = 0;
+                                foreach (char c in allItemItemsCopy)
+                                {
+                                    Item currentItem = shopItems.items[int.Parse(c.ToString())];
+                                    Console.WriteLine($"Item #: {index}");
+                                    Console.WriteLine($"Name: {currentItem.name}");
+                                    Console.WriteLine($"Accuracy modifier: {currentItem.accModifier}%");
+                                    Console.WriteLine($"Attack modifier: {currentItem.attackIncrease}");
+                                    Console.WriteLine($"Max HP modifier: {currentItem.maxHPmodifier}");
+                                    Console.WriteLine($"Description: {currentItem.description}");
+                                    Console.WriteLine();
+                                    index++;
+                                }
+
+                                Console.WriteLine("These are all your items!");
+                                Console.WriteLine($"Press arrow keys to switch page, {page}/3");
+                                Console.WriteLine("Press (E) to exit (also finish this interface).");
+                                tempChar = Console.ReadKey().Key;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("The data is corrupted or you dont have any.");
+                            Console.WriteLine($"Press arrow keys to switch page, {page}/3");
+                            Console.WriteLine("Press (E) to exit (also finish this interface).");
+                            tempChar = Console.ReadKey().Key;
+                        }
+
+                        if (tempChar == ConsoleKey.RightArrow)
+                        {
+                            if (page == 3)
+                            {
+                                page = 1;
+                            }
+                            else
+                            {
+                                page++;
+                            }
+                        }
+                        else if (tempChar == ConsoleKey.LeftArrow)
+                        {
+                            if (page == 1)
+                            {
+                                page = 3;
+                            }
+                            else
+                            {
+                                page--;
+                            }
+                        }
+                        else if (tempChar == ConsoleKey.E)
+                        {
+                            Console.WriteLine("You have now saved and exited!");
+                            Thread.Sleep(1000);
+                            done = true;
                         }
                         break;
                 }
@@ -889,7 +976,7 @@ namespace Fighting2_TheRiseOfSerializing
                 //SaveGame(c, difficulty, allOffensiveItemsCopy, allDefensiveItemsCopy, allItemItemsCopy);
 
                 Console.Clear();
-                Console.WriteLine("Your new hp is {c.hp}, and your instant damage will be {consumableDamage}");
+                Console.WriteLine("Your total healing is {consumableTotalHeal}, and your instant damage will be {consumableTotalDamage}");
             }
             //return c;
         }

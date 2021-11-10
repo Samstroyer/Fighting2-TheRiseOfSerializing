@@ -630,8 +630,7 @@ namespace Fighting2_TheRiseOfSerializing
             return success;
         }
 
-        //static {Player, Enemy[]} UseConsumables(Player c, Enemy[] e, int difficulty)
-        static void test()
+        static (Player, Enemy[]) UseConsumables(Player p, Enemy[] e, int difficulty)
         {
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
             string rawData = File.ReadAllText(@"..\data.json");
@@ -643,13 +642,13 @@ namespace Fighting2_TheRiseOfSerializing
             List<int> usedOffensiveItemsID = new List<int>();
 
             string allItemItemsCopy = loadedData[3];
-            List<int> usedItemItemsID = new List<int>();
 
             ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData); ItemCollection shopItems = deserializedShopItems.items;
             ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData); OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
             ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData); DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
 
-            //Jag kan göra det lite sketchy och räkna människo värden. Det är lite enklare då allt matchar men det e lite sketch som sagt. vill helst ha page starta från 0 till 2 istället för 1 till 3
+
+            //Jag kan göra det lite sketchy och räkna med direkta människo värden. Det fungerar då [1] är första raden vi använder  
             int page = 1;
             bool done = false;
             var tempChar = ConsoleKey.B;
@@ -660,10 +659,6 @@ namespace Fighting2_TheRiseOfSerializing
             {
                 switch (page)
                 {
-
-
-
-
                     case 1:
                         if (!allDefensiveItemsCopy.Contains("-") || !allDefensiveItemsCopy.Contains(""))
                         {
@@ -783,9 +778,9 @@ namespace Fighting2_TheRiseOfSerializing
 
 
                     case 2:
-                        tempChar = ConsoleKey.B;
                         if (!allOffensiveItemsCopy.Contains("-") || allOffensiveItemsCopy.Length < 1)
                         {
+                            tempChar = ConsoleKey.B;
                             while (tempChar != ConsoleKey.LeftArrow && tempChar != ConsoleKey.RightArrow && tempChar != ConsoleKey.E)
                             {
                                 Console.WriteLine("Your offensive items are:\n");
@@ -896,8 +891,9 @@ namespace Fighting2_TheRiseOfSerializing
 
 
                     case 3:
-                        if (!loadedData[3].Contains("-") || loadedData[3].Length < 1)
+                        if (!allItemItemsCopy.Contains("-") || allItemItemsCopy.Length < 1)
                         {
+                            tempChar = ConsoleKey.B;
                             while (!(tempChar == ConsoleKey.LeftArrow || tempChar == ConsoleKey.RightArrow || tempChar == ConsoleKey.E))
                             {
                                 Console.WriteLine("Your items are:\n");
@@ -961,23 +957,34 @@ namespace Fighting2_TheRiseOfSerializing
                         break;
                 }
 
-                foreach (int i in usedDefensiveItemsID)  //item apply damage and heal 
-                {
-                    consumableTotalHeal *= int.Parse(defensiveItems.defensive[i].percentHP);
-                    consumableTotalHeal += int.Parse(defensiveItems.defensive[i].baseHP);
-                }
-                foreach (int i in usedOffensiveItemsID)  //item apply damage and heal 
-                {
-                    consumableTotalDamage *= int.Parse(offensiveItems.offensive[i].percentAttack);
-                    consumableTotalHeal += int.Parse(offensiveItems.offensive[i].baseAttack);
-                }
-
-
-                //SaveGame(c, difficulty, allOffensiveItemsCopy, allDefensiveItemsCopy, allItemItemsCopy);
-
-                Console.Clear();
-                Console.WriteLine("Your total healing is {consumableTotalHeal}, and your instant damage will be {consumableTotalDamage}");
             }
+
+            foreach (int i in usedDefensiveItemsID)  //item apply damage and heal 
+            {
+                consumableTotalHeal += int.Parse(defensiveItems.defensive[i].baseHP);
+                consumableTotalHeal *= int.Parse(defensiveItems.defensive[i].percentHP);
+            }
+            c.hp = (consumableTotalHeal + int.Parse(c.hp)).ToString();
+            if (int.Parse(c.hp) > int.Parse(c.maxHp))
+            {
+                c.hp = c.maxHp;
+            }
+
+            foreach (int i in usedOffensiveItemsID)  //item apply damage and heal 
+            {
+                consumableTotalHeal += int.Parse(offensiveItems.offensive[i].baseAttack);
+                consumableTotalDamage *= int.Parse(offensiveItems.offensive[i].percentAttack);
+            }
+            foreach (Enemy enemy in e)
+            {
+                enemy.baseHP -= consumableTotalDamage;
+            }
+
+
+            //SaveGame(c, difficulty, allOffensiveItemsCopy, allDefensiveItemsCopy, allItemItemsCopy);
+
+            Console.Clear();
+            Console.WriteLine("Your total healing is {consumableTotalHeal}, and your instant damage will be {consumableTotalDamage}");
             //return c;
         }
 

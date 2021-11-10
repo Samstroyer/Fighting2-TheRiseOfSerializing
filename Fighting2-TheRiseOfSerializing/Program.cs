@@ -12,11 +12,10 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("hey, started!");
             test();
-            NewGame();
             GreetUser();
-
+            NewGame();
+            Console.WriteLine("Thanks for playing! The game has been saved!");
             Console.ReadLine();
         }
 
@@ -214,7 +213,7 @@ namespace Fighting2_TheRiseOfSerializing
                         Console.WriteLine();
                         Console.WriteLine($"You are on page {page + 1}/3");
                         Console.WriteLine("Press the arrow keys to switch viewed page or Enter to exit");
-                        ch = Console.ReadKey(true).Key;
+                        ch = Console.ReadKey(false).Key;
                         if (ch == ConsoleKey.LeftArrow)
                         {
                             if (page == 0)
@@ -281,7 +280,7 @@ namespace Fighting2_TheRiseOfSerializing
                     if (!succesfulLoad)
                     {
                         Console.WriteLine("Unable to load saved data!");
-                        Console.WriteLine("A new game was started! (Old file at: \"old-save.txt\" in dir)");
+                        Console.WriteLine("A new game was started! (Old file data at: \"old-save.txt\" in dir)");
                         NewGame();
                     }
                 }
@@ -391,7 +390,7 @@ namespace Fighting2_TheRiseOfSerializing
             Console.Clear();
 
             chosenCharacter = Game(chosenCharacter, difficulty);
-            //Summarize
+            SaveGame(chosenCharacter, difficulty);
         }
 
         static Player Game(Player c, int diff)
@@ -475,7 +474,9 @@ namespace Fighting2_TheRiseOfSerializing
             var ch = Console.ReadKey(false).Key;
             if (ch == ConsoleKey.C)
             {
-                //character = Consumables(character, enemies);
+                (Player returnedPlayer, Enemy[] returnedEnemies) c = UseConsumables(character, enemies, difficulty);
+                character = c.returnedPlayer;
+                enemies = c.returnedEnemies;
             }
 
             Console.Clear();
@@ -618,15 +619,125 @@ namespace Fighting2_TheRiseOfSerializing
             File.WriteAllLines("save.json", save);
         }
 
-        static Player Shop(Player c)
+        //static Player Shop(Player c)
+        static void test()
         {
+            string[] saveData = File.ReadAllLines(@"..\save.txt");
+            string rawData = File.ReadAllText(@"..\data.json");
+            ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData); ItemCollection shopItems = deserializedShopItems.items;
+            ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData); OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
+            ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData); DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
 
-            return c;
+            (bool d, bool o, bool i) availabilityOfCollection;
+            (Defensive, Offensive, Item) collection;
+            (bool d, bool o, bool i) boughtFromCollection = (false, false, false);
+
+            Random gen = new Random();
+
+            collection.Item1 = defensiveItems.defensive[gen.Next(0, defensiveItems.defensive.Count)];
+            collection.Item2 = offensiveItems.offensive[gen.Next(0, offensiveItems.offensive.Count)];
+            collection.Item3 = shopItems.items[gen.Next(0, shopItems.items.Count)];
+
+            //I UseConsumable() menyn så har jag en readkey, det gör enklare för mig OCH gör så att man inte kan ha mer än 0-9 items. 
+            //Så för att göra så att man inte fixar mer items än man kan ha så finns det en check om man kan köpa eller inte!
+            //Det är också < istället för <= för att man inte ska kunna gå över 10 items. *trial and error correction*
+            if (saveData[1].Length < 10)
+            {
+                availabilityOfCollection.d = true;
+            }
+            else
+            {
+                availabilityOfCollection.d = false;
+            }
+            if (saveData[2].Length < 10)
+            {
+                availabilityOfCollection.o = true;
+            }
+            else
+            {
+                availabilityOfCollection.o = false;
+            }
+            //Kan stacka items oändligt!
+            availabilityOfCollection.i = true;
+
+            bool done = false;
+            var ch = ConsoleKey.B;
+            while (!done)
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("This is the shop menu! Here you can use your money to gain advantage over oponents.");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("You have {c.money} money.");
+                Console.WriteLine("You have {saveData[1].length}/10 defensive item(s).");
+                Console.WriteLine("You have {saveData[1].length}/10 offensive item(s).");
+                Console.WriteLine("You have {saveData[3].length} item(s).");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Press (E) to exit or you can buy:");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                if (availabilityOfCollection.d)
+                {
+                    Console.WriteLine($"\nDefensive: {collection.Item1.name} for {collection.Item1.cost} (D)");
+                    Console.WriteLine(collection.Item1.description);
+                }
+                else if (boughtFromCollection.d)
+                {
+                    Console.WriteLine("\nBought");
+                }
+                else
+                {
+                    Console.WriteLine("\nUnable to purchase at this moment!");
+                }
+
+                if (availabilityOfCollection.o)
+                {
+                    Console.WriteLine($"\nOffensive: {collection.Item2.name} for {collection.Item2.cost} (O)");
+                    Console.WriteLine(collection.Item2.description);
+                }
+                else if (boughtFromCollection.o)
+                {
+                    Console.WriteLine("\nBought");
+                }
+                else
+                {
+                    Console.WriteLine("\nUnable to purchase at this moment!");
+                }
+
+                if (boughtFromCollection.i)
+                {
+                    Console.WriteLine("\nBought");
+                }
+                else
+                {
+                    Console.WriteLine($"\nItem: {collection.Item3.name} for {collection.Item3.cost} (I)");
+                    Console.WriteLine(collection.Item3.description);
+                }
+
+                ch = Console.ReadKey(false).Key;
+            }
+
+            //return c;
         }
 
         static bool LoadGame()
         {
-            bool success = false;
+            string[] data = File.ReadAllLines(@"..\save.txt");
+            bool success = true;
+            if (data[0].Contains("-") || data[0].Length < 1)
+            {
+                success = false;
+            }
+            else
+            {
+                for (int i = 1; i < data.Length; i++)
+                {
+                    if (data[i].Length < 1 || data[i].Contains("-"))
+                    {
+                        data[i] = "-";
+                    }
+                }
+            }
+
             return success;
         }
 
@@ -771,10 +882,6 @@ namespace Fighting2_TheRiseOfSerializing
                             }
                         }
                         break;
-
-
-
-
 
 
                     case 2:
@@ -964,10 +1071,10 @@ namespace Fighting2_TheRiseOfSerializing
                 consumableTotalHeal += int.Parse(defensiveItems.defensive[i].baseHP);
                 consumableTotalHeal *= int.Parse(defensiveItems.defensive[i].percentHP);
             }
-            c.hp = (consumableTotalHeal + int.Parse(c.hp)).ToString();
-            if (int.Parse(c.hp) > int.Parse(c.maxHp))
+            p.hp = (consumableTotalHeal + int.Parse(p.hp)).ToString();
+            if (int.Parse(p.hp) > int.Parse(p.maxHp))
             {
-                c.hp = c.maxHp;
+                p.hp = p.maxHp;
             }
 
             foreach (int i in usedOffensiveItemsID)  //item apply damage and heal 
@@ -984,10 +1091,9 @@ namespace Fighting2_TheRiseOfSerializing
             //SaveGame(c, difficulty, allOffensiveItemsCopy, allDefensiveItemsCopy, allItemItemsCopy);
 
             Console.Clear();
-            Console.WriteLine("Your total healing is {consumableTotalHeal}, and your instant damage will be {consumableTotalDamage}");
-            //return c;
+            Console.WriteLine($"Your total healing is {consumableTotalHeal}\nYour instant damage to all enemies will be {consumableTotalDamage}");
+            return (p, e);
         }
-
     }
 
 

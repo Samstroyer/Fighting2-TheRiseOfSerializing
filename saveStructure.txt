@@ -1,0 +1,32 @@
+För att Load-a filen får man inte ha "" eller "-" på första raden. Att ändra det fel kan dock göra så att koden inte laddar filen!
+(Streck "-" eller tomma rader "" är ingen data, hoppa över det! Programmerat att inte crasha med "-", men om det är i första raden kommer den skapa ett nytt spel då man behöver en första rad korrekt data!)
+
+#########################
+                        #
+STRUKTUR FÖR FILEN!     #
+                        #
+#########################
+
+---------------------------------
+[index 0] *NAMN, *HP, *PENGAR, *DIFFICULTY
+[index 1] !*DEFENSIVE ITEMS 
+[index 2] !*OFFENSIVE ITEMS 
+[index 3] *ITEMS ITEMS
+---------------------------------
+"!" betyder att error händer enkelt händer utan att vara försiktig
+
+
+
+*NAMN: Namn på karaktär (ska helst vara ett namn på en 'Character Preset' i "data.json")
+
+*HP: Hur mycket HP man har (Kommer inte kunna vara över MAXHP, men det går att hitta karaktärens gräns i "data.json" men går att modda med items!)
+
+*PENGAR: Hur mycket pengar man har, tror 32bit integer limit är gränsen
+
+*DIFFICULTY: Vilken svårighetsgrad det är, kan vara mellan "1" till "32bit integer limit"
+
+*OFFENSIVE ITEMS: Måste vara korrekt indexat (startat från 0) med referens från '{shop:{defensive:~~}}' "data.json" filen, kan inte vara fler än 10 items då det är en comsumable
+
+*DEFENSIVE ITEMS: Måste vara korrekt indexat (startat från 0) med referens från '{shop:{offensive:~~}}' "data.json" filen, kan inte vara fler än 10 items då det är en comsumable
+
+*ITEMS ITEMS: Alla items man har köpt från affären, borde kunna fungera att ha oändligt men det kommer ta TID att ladda in (och det kan vara en list size limit eller en size som krashar först)

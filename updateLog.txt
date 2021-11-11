@@ -5,3 +5,4 @@
 2.00 : The game has minor bugs but is playable for real!
 2.01 : Added name sync, less info in the "save.txt" file!
 2.02 : Everything with ".ToString()" is instant fix! smh...
+3.00 : Published and officially finished!

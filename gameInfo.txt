@@ -1,0 +1,29 @@
+Tjenare!
+
+Det här spelet är gjort av Samuel Palmér i TE20A
+
+
+--SPELET--
+Spelet är ett textbaserat fighting spel. Man väljer en karaktär, fightas och får pengar av det.
+Med pengar kan man köpa consumables och items. Det ger dig fördelar i din nästa strid!
+Förlorar man så overwrite'as inte datan i save direkt så man kan starta om spelet och ändra ett viktigt beslut (eller hoppas på bättre RNG!)
+Man startar med 2 potions för annars är det nästan omöjligt, resten behöver man köpa!
+
+--KODEN--
+Koden är välkodad enligt mig, men det finns flera paths som är janky då jag inte hittat / eller löst / alla paths med "Console.Clear()". Det gör vissa saker ~lite~ oläsbara!
+Det finns ibland overflows, men det är egentligen beroende på hur stor man har konsolrutan. Jag vet inte hur man ändrar den från default men lär mig gärna (classroom kommentar?)
+Jag har använt mig av polymorphism för "SaveGame" metoden speciellt då jag vill att olika saker ska save'as olika gånger, det gör mindre spaghetti kod då istället att jag alöltid behöver karaktären kan jag t.ex bara behöva skicka in nya 'items' listan
+Jag har försökt följa efter det svårare exemplet i classroom men jag tror det spårade ut lite och blev något svårare...
+Vissa saker som när man använder en consumable används de i ordningen man väljer dem. Det kan alltså ändra output beroende på ordningen man väljer saker...
+
+--STRUKTUR--
+Jag har serializing (namnet är "TheRiseOfSerializing") som main structure, den kommer ifrån "data.json". 
+Inget i spelet skrivs i "data.json" eller skrivs till ens en .json fil, men grund spelet läses in från den. dvs olika karaktärer, items och consumables. 
+Save (finns bara 1) kommer från "save.txt", den är ganska lätt att ändra på och ge sig själv items! (Titta "saveStructure.txt" för mer information!)
+Jag har inte fixat flera filer utan har "program.cs", jag har dock lärt mig hur man kan använda sig av flera och ska göra det i framtiden! (program.cs, logic.cs etc.)
+
+--MISC--
+'Game inspector' är mest för att utforska "data.json" filen men det get också en bra insikt i spelet.
+'Shop' slumpar fram en av alla olika item kategorier och man får välja vilken man ska köpa av de. En förbättring kan vara att man får re-rolla affären för pengar?
+Det finns en gräns på hur många consumables man kan ha (defensive och offensive), det är av balancing men också för att det är en "Console.ReadKey()", det gör så att bara en siffra kan läsas. Alltså 0-9, 10 stycken totalt!
+'difficulty' är en semi-global variabel då den skickas runt men inte förekommer överallt, den sparas för att veta hur svårt (och hur många enemies) man kan möta. 

@@ -12,7 +12,6 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
-            test();
             GreetUser();
             NewGame();
             Console.WriteLine("Thanks for playing! The game has been saved!");
@@ -22,6 +21,7 @@ namespace Fighting2_TheRiseOfSerializing
         static void GreetUser()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Clear();
             Console.WriteLine("Welcome to my fighter simulator!");
             Console.WriteLine("In this game you are primarly going to play as a character and defeat enemies.");
             Console.WriteLine("After defeating them you will get gold and enter the shop, buy stuff and get better.");
@@ -301,8 +301,6 @@ namespace Fighting2_TheRiseOfSerializing
                     System.Threading.Thread.Sleep(1000);
                     Console.Clear();
                 }
-
-                //PROBABLY NEED SMT HERE TO NOT DO WEIRD LOOPING!
             }
         }
 
@@ -332,11 +330,12 @@ namespace Fighting2_TheRiseOfSerializing
             Console.WriteLine("Your next step to creating your journey is picking a character:");
 
             var ch = ConsoleKey.B;
-            int playerNumber = 1;
+            int playerNumber;
             bool chosing = true;
 
             while (chosing)
             {
+                playerNumber = 1;
                 foreach (Player p in players)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -467,16 +466,19 @@ namespace Fighting2_TheRiseOfSerializing
 
             Console.ForegroundColor = ConsoleColor.White;
 
-            Console.WriteLine($"{character.name} current HP: {character.hp} / {character.maxHp}");
+            Console.WriteLine($"{character.name} current HP: {character.hp} / {GetMaxHP(character)}");
             Console.WriteLine();
             Console.WriteLine("If you are low on HP or need extra damage from items, open consumables.");
             Console.WriteLine("Press any key to start the battle or press (C) to open consumables?");
             var ch = Console.ReadKey(false).Key;
+            Console.Clear();
             if (ch == ConsoleKey.C)
             {
                 (Player returnedPlayer, Enemy[] returnedEnemies) c = UseConsumables(character, enemies, difficulty);
                 character = c.returnedPlayer;
                 enemies = c.returnedEnemies;
+                Console.WriteLine("Press any key to continue!");
+                Console.ReadKey();
             }
 
             Console.Clear();
@@ -587,40 +589,100 @@ namespace Fighting2_TheRiseOfSerializing
 
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($"You won the battle and got {gold} gold!");
-                Console.WriteLine("Press any key to continue.");
-                Console.ReadLine();
+                Console.WriteLine("Press any key to continue or (S) to go to the shop!");
+                ch = Console.ReadKey(true).Key;
+                if (ch == ConsoleKey.S)
+                {
+                    character = Shop(character);
+                }
                 SaveGame(character, difficulty);
                 return character;
             }
         }
 
+        static void AppendToSave((string dID, bool dBought) d, (string oID, bool oBought) o, (string iID, bool iBought) i)
+        {
+            string[] loadedData = File.ReadAllLines(@"..\save.txt");
+            string[] save = new string[4];
+
+            save[0] = loadedData[0];
+
+            if (d.dBought)
+            {
+                if (loadedData[1].Length < 1 || loadedData[1].Contains("-"))
+                {
+                    save[1] = d.dID;
+                }
+                else
+                {
+                    save[1] = loadedData[1] + d.dID;
+                }
+            }
+            else
+            {
+                save[1] = loadedData[1];
+            }
+
+            if (o.oBought)
+            {
+                if (loadedData[2].Length < 1 || loadedData[2].Contains("-"))
+                {
+                    save[2] = o.oID;
+                }
+                else
+                {
+                    save[2] = loadedData[2] + o.oID;
+                }
+            }
+            else
+            {
+                save[2] = loadedData[2];
+            }
+
+            if (i.iBought)
+            {
+                if (loadedData[3].Length < 1 || loadedData[3].Contains("-"))
+                {
+                    save[3] = o.oID;
+                }
+                else
+                {
+                    save[3] = loadedData[3] + i.iID;
+                }
+            }
+            else
+            {
+                save[3] = loadedData[3];
+            }
+
+            File.WriteAllLines(@"..\save.txt", save);
+        }
         static void SaveGame(Player c, int d)
         {
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
-            List<string> save = new List<string>();
+            string[] save = new string[4];
 
             save[0] = $"{c.name},{c.hp},{c.money},{d}";
             save[1] = loadedData[1];
             save[2] = loadedData[2];
             save[3] = loadedData[3];
 
-            File.WriteAllLines("save.json", save);
+            File.WriteAllLines(@"..\save.txt", save);
         }
         static void SaveGame(Player c, int d, string dataLine1, string dataLine2, string dataLine3)
         {
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
-            List<string> save = new List<string>();
+            string[] save = new string[4];
 
             save[0] = $"{c.name},{c.hp},{c.money},{d}";
             save[1] = dataLine1;
             save[2] = dataLine2;
             save[3] = dataLine3;
 
-            File.WriteAllLines("save.json", save);
+            File.WriteAllLines(@"..\save.txt", save);
         }
 
-        //static Player Shop(Player c)
-        static void test()
+        static Player Shop(Player c)
         {
             string[] saveData = File.ReadAllLines(@"..\save.txt");
             string rawData = File.ReadAllText(@"..\data.json");
@@ -634,9 +696,11 @@ namespace Fighting2_TheRiseOfSerializing
 
             Random gen = new Random();
 
-            collection.Item1 = defensiveItems.defensive[gen.Next(0, defensiveItems.defensive.Count)];
-            collection.Item2 = offensiveItems.offensive[gen.Next(0, offensiveItems.offensive.Count)];
-            collection.Item3 = shopItems.items[gen.Next(0, shopItems.items.Count)];
+
+            (int d, int o, int i) itemID = (gen.Next(0, defensiveItems.defensive.Count), gen.Next(0, offensiveItems.offensive.Count), gen.Next(0, shopItems.items.Count));
+            collection.Item1 = defensiveItems.defensive[itemID.d];
+            collection.Item2 = offensiveItems.offensive[itemID.o];
+            collection.Item3 = shopItems.items[itemID.i];
 
             //I UseConsumable() menyn så har jag en readkey, det gör enklare för mig OCH gör så att man inte kan ha mer än 0-9 items. 
             //Så för att göra så att man inte fixar mer items än man kan ha så finns det en check om man kan köpa eller inte!
@@ -662,26 +726,37 @@ namespace Fighting2_TheRiseOfSerializing
 
             bool done = false;
             var ch = ConsoleKey.B;
-            while (!done)
+            while (!done && !(boughtFromCollection.d && boughtFromCollection.o && boughtFromCollection.i))
             {
+                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("This is the shop menu! Here you can use your money to gain advantage over oponents.");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("You have {c.money} money.");
-                Console.WriteLine("You have {saveData[1].length}/10 defensive item(s).");
-                Console.WriteLine("You have {saveData[1].length}/10 offensive item(s).");
-                Console.WriteLine("You have {saveData[3].length} item(s).");
+                Console.WriteLine($"You have {c.money} money.");
+                Console.WriteLine($"You have {saveData[1].Length}/10 defensive item(s).");
+                Console.WriteLine($"You have {saveData[1].Length}/10 offensive item(s).");
+                Console.WriteLine($"You have {saveData[3].Length} item(s).");
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("Press (E) to exit or you can buy:");
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                if (availabilityOfCollection.d)
+
+                if ((int.Parse(c.money) >= int.Parse(collection.Item1.cost) || boughtFromCollection.d))
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                if (availabilityOfCollection.d && !boughtFromCollection.d)
                 {
                     Console.WriteLine($"\nDefensive: {collection.Item1.name} for {collection.Item1.cost} (D)");
                     Console.WriteLine(collection.Item1.description);
                 }
                 else if (boughtFromCollection.d)
                 {
+
                     Console.WriteLine("\nBought");
                 }
                 else
@@ -689,7 +764,15 @@ namespace Fighting2_TheRiseOfSerializing
                     Console.WriteLine("\nUnable to purchase at this moment!");
                 }
 
-                if (availabilityOfCollection.o)
+                if ((int.Parse(c.money) >= int.Parse(collection.Item2.cost)) || boughtFromCollection.o)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                if (availabilityOfCollection.o && !boughtFromCollection.o)
                 {
                     Console.WriteLine($"\nOffensive: {collection.Item2.name} for {collection.Item2.cost} (O)");
                     Console.WriteLine(collection.Item2.description);
@@ -703,6 +786,14 @@ namespace Fighting2_TheRiseOfSerializing
                     Console.WriteLine("\nUnable to purchase at this moment!");
                 }
 
+                if ((int.Parse(c.money) >= int.Parse(collection.Item3.cost)) || boughtFromCollection.i)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
                 if (boughtFromCollection.i)
                 {
                     Console.WriteLine("\nBought");
@@ -714,9 +805,55 @@ namespace Fighting2_TheRiseOfSerializing
                 }
 
                 ch = Console.ReadKey(false).Key;
+                Console.Clear();
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                if (ch == ConsoleKey.D && int.Parse(c.money) >= int.Parse(collection.Item1.cost) && !boughtFromCollection.d)
+                {
+                    boughtFromCollection.d = true;
+                    c.money = (int.Parse(c.money) - int.Parse(collection.Item1.cost)).ToString();
+                    Console.WriteLine($"You have bought {collection.Item1.name}! Your new balance is {c.money}");
+                    Thread.Sleep(1000);
+                }
+                else if (ch == ConsoleKey.O && int.Parse(c.money) >= int.Parse(collection.Item2.cost) && !boughtFromCollection.o)
+                {
+                    boughtFromCollection.o = true;
+                    c.money = (int.Parse(c.money) - int.Parse(collection.Item2.cost)).ToString();
+                    Console.WriteLine($"You have bought {collection.Item2.name}! Your new balance is {c.money}");
+                    Thread.Sleep(1000);
+                }
+                else if (ch == ConsoleKey.I && int.Parse(c.money) >= int.Parse(collection.Item3.cost) && !boughtFromCollection.i)
+                {
+                    boughtFromCollection.i = true;
+                    c.money = (int.Parse(c.money) - int.Parse(collection.Item3.cost)).ToString();
+                    Console.WriteLine($"You have bought {collection.Item3.name}! Your new balance is {c.money}");
+                    Thread.Sleep(1000);
+                }
+
+                if (ch == ConsoleKey.E)
+                {
+                    break;
+                }
             }
 
-            //return c;
+            if (boughtFromCollection.d && boughtFromCollection.o && boughtFromCollection.i)
+            {
+                Console.WriteLine("You have bought all items in the store!");
+                Console.WriteLine($"Current money: {c.money}");
+                Console.WriteLine("Press any key to continue!");
+                AppendToSave((itemID.d.ToString(), boughtFromCollection.d), (itemID.o.ToString(), boughtFromCollection.o), (itemID.i.ToString(), boughtFromCollection.i));
+                Console.ReadKey();
+                return c;
+            }
+            else
+            {
+                Console.WriteLine("You have exited the store!");
+                Console.WriteLine($"Current money: {c.money}");
+                Console.WriteLine("Press any key to continue!");
+                AppendToSave((itemID.d.ToString(), boughtFromCollection.d), (itemID.o.ToString(), boughtFromCollection.o), (itemID.i.ToString(), boughtFromCollection.i));
+                Console.ReadKey(true);
+                return c;
+            }
         }
 
         static bool LoadGame()
@@ -726,6 +863,8 @@ namespace Fighting2_TheRiseOfSerializing
             if (data[0].Contains("-") || data[0].Length < 1)
             {
                 success = false;
+                Console.WriteLine("The save is corrupted or can't load! Starting new game.");
+                NewGame();
             }
             else
             {
@@ -736,6 +875,27 @@ namespace Fighting2_TheRiseOfSerializing
                         data[i] = "-";
                     }
                 }
+                Player p = new Player();
+                string[] playerInfo = data[0].Split(",");
+                p.name = playerInfo[0];
+
+                string rawData = File.ReadAllText(@"..\data.json");
+                PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
+
+                foreach (Player pPresets in deserializedPlayerData.players)
+                {
+                    if (pPresets.name == p.name)
+                    {
+                        p = pPresets;
+                        break;
+                    }
+                }
+
+                p.hp = playerInfo[1];
+                p.money = playerInfo[2];
+                int difficulty = int.Parse(playerInfo[3]);
+
+                Game(p, difficulty);
             }
 
             return success;
@@ -763,9 +923,10 @@ namespace Fighting2_TheRiseOfSerializing
             int page = 1;
             bool done = false;
             var tempChar = ConsoleKey.B;
-            int consumableTotalDamage = 0;
-            int consumableTotalHeal = 0;
+            double consumableTotalDamage = 0;
+            double consumableTotalHeal = 0;
 
+            Console.Clear();
             while (!done)
             {
                 switch (page)
@@ -1063,36 +1224,76 @@ namespace Fighting2_TheRiseOfSerializing
                         }
                         break;
                 }
-
+                Console.Clear();
             }
 
             foreach (int i in usedDefensiveItemsID)  //item apply damage and heal 
             {
                 consumableTotalHeal += int.Parse(defensiveItems.defensive[i].baseHP);
-                consumableTotalHeal *= int.Parse(defensiveItems.defensive[i].percentHP);
+                if (int.Parse(defensiveItems.defensive[i].percentHP) > 0)
+                {
+                    double percentage = double.Parse(defensiveItems.defensive[i].percentHP) / 100d;
+                    consumableTotalHeal += (percentage) * int.Parse(GetMaxHP(p).ToString());
+                }
             }
-            p.hp = (consumableTotalHeal + int.Parse(p.hp)).ToString();
-            if (int.Parse(p.hp) > int.Parse(p.maxHp))
+            p.hp = Math.Floor((consumableTotalHeal + int.Parse(p.hp))).ToString();
+            int maxHP = GetMaxHP(p);
+            if (int.Parse(p.hp) > maxHP)
             {
-                p.hp = p.maxHp;
+                p.hp = maxHP.ToString();
             }
 
             foreach (int i in usedOffensiveItemsID)  //item apply damage and heal 
             {
-                consumableTotalHeal += int.Parse(offensiveItems.offensive[i].baseAttack);
-                consumableTotalDamage *= int.Parse(offensiveItems.offensive[i].percentAttack);
+                consumableTotalDamage += int.Parse(offensiveItems.offensive[i].baseAttack);
+                if (int.Parse(offensiveItems.offensive[i].percentAttack) > 0)
+                {
+                    consumableTotalDamage *= 1 + (int.Parse(offensiveItems.offensive[i].percentAttack) / 100);
+                }
             }
             foreach (Enemy enemy in e)
             {
-                enemy.baseHP -= consumableTotalDamage;
+                enemy.baseHP -= Convert.ToInt32(consumableTotalDamage);
             }
 
 
-            //SaveGame(c, difficulty, allOffensiveItemsCopy, allDefensiveItemsCopy, allItemItemsCopy);
+            SaveGame(p, difficulty, allOffensiveItemsCopy, allDefensiveItemsCopy, allItemItemsCopy);
 
             Console.Clear();
-            Console.WriteLine($"Your total healing is {consumableTotalHeal}\nYour instant damage to all enemies will be {consumableTotalDamage}");
+            Console.WriteLine($"Your total healing is {Math.Floor(consumableTotalHeal)}\nYour instant damage to all enemies will be {Math.Floor(consumableTotalDamage)}");
             return (p, e);
+        }
+
+        static int GetMaxHP(Player p)
+        {
+            string rawData = File.ReadAllText(@"..\data.json");
+            string items = File.ReadAllLines(@"..\save.txt")[3];
+            PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
+            ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData);
+
+            int baseHPForCharacter = 0;
+            int maxHP;
+
+            foreach (Player playerPresets in deserializedPlayerData.players)
+            {
+                if (playerPresets.name == p.name)
+                {
+                    baseHPForCharacter = int.Parse(playerPresets.hp);
+                    break;
+                }
+            }
+
+            //Det här gör så att ordningen som man får items i kommer ändra hur mycket HP man får i slutet. Men det kan vara en strategi som bara de bästa vet, de som vill speedruna det här!
+            maxHP = baseHPForCharacter;
+            foreach (char i in items)
+            {
+                if (!(i.ToString() == "-"))
+                {
+                    maxHP += int.Parse(deserializedShopItems.items.items[int.Parse(i.ToString())].maxHPmodifier);
+                }
+            }
+
+            return maxHP;
         }
     }
 
@@ -1106,7 +1307,7 @@ namespace Fighting2_TheRiseOfSerializing
         public int baseHP = 75;
         public int acc = 90;
         public string baseAttack = "5-9";
-        public string carriedGold = "0-10";
+        public string carriedGold = "5-40";
     }
 
     public class PlayerCollection

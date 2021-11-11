@@ -14,7 +14,7 @@ kanske behöver ge spelaren en potion i början av allting. equipment ska bara v
 för att load-a spel
 streck är ingen data - hoppa över det!
 
-character number, current hp, MAX HP, money, difficulty
+name, current hp, money, difficulty
 !defensive items - bara en rad med nummer 123131238198195 som delas upp i chars - KAN ALLTSÅ INTE HA MER ÄN 10 ITEMS!
 !offensive items samma som off
 items items samma som off

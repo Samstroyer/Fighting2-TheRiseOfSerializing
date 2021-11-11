@@ -103,8 +103,8 @@
                 "attackIncrease": "15",
                 "cost": "50",
                 "accModifier": "-10",
-                "maxHPmodifier": "0",
-                "description": "Very heavy to swing so accuracy is lost"
+                "maxHPmodifier": "10",
+                "description": "Very heavy to swing so accuracy is lost but makes the user feel more healthy"
             },
             {
                 "name": "Chalk",
@@ -119,7 +119,7 @@
                 "attackIncrease": "10",
                 "cost": "80",
                 "accModifier": "50",
-                "maxHPmodifier": "0",
+                "maxHPmodifier": "10",
                 "description": "The aligned spirit helps you to hit attacks"
             },
             {
@@ -135,7 +135,7 @@
                 "attackIncrease": "0",
                 "cost": "20",
                 "accModifier": "0",
-                "maxHPmodifier": "10",
+                "maxHPmodifier": "30",
                 "description": "Helth crystals can store HP"
             }
         ]

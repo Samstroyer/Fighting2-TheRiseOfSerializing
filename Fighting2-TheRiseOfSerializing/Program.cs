@@ -12,6 +12,7 @@ namespace Fighting2_TheRiseOfSerializing
     {
         static void Main(string[] args)
         {
+            //Core av programmet, GreetUser vilket startar allt och sen NewGame så att den alltid kommer starta ett nytt spel
             GreetUser();
             NewGame();
             Console.WriteLine("Thanks for playing! The game has been saved!");
@@ -20,6 +21,7 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void GreetUser()
         {
+            //GreetUser ska välkommna spelaren och förklara vad spelet är på ett ungefär, en liten trailer/teaser
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Clear();
             Console.WriteLine("Welcome to my fighter simulator!");
@@ -28,15 +30,20 @@ namespace Fighting2_TheRiseOfSerializing
             Console.WriteLine("The game in itself is an infinite scaling battle arena with lots of stuff to explore!");
             Console.WriteLine();
 
+            //Visar UpdateLog 
             UpdateLog();
 
+            //Startar Menu, true/false handlar om man ska få en speciell interface eller inte när man anropar Menu
             Menu(true);
         }
 
         static void UpdateLog()
         {
+            //UpdateLog är en rolig sak jag ville implementera för att försöka komma ihåg att göra Commits i GitHub
+            //Det visar också, väldigt dåligt, i vilka steg spelet gjordes
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
+            //Laddar in och skriver alla rader i konsolen
             string[] log = File.ReadAllLines(@"..\updateLog.txt");
             Console.WriteLine("Update log:");
             foreach (string update in log)
@@ -51,6 +58,7 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void Menu(bool intro)
         {
+            //Det här är argumentet som skickas med, det är om man ska ha en Console.ReadKey() i början basically. Det kan annars bli konstig prompting
             if (intro)
             {
                 Console.WriteLine("\nPress any key to continue!");
@@ -60,6 +68,7 @@ namespace Fighting2_TheRiseOfSerializing
 
             while (true)
             {
+                //Man måste välja ett alternativ till vad man vill göra
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("What would you like to do?");
                 Console.WriteLine("Play the game (P), see update log (L) or inspect game (G)?");
@@ -83,6 +92,7 @@ namespace Fighting2_TheRiseOfSerializing
                 }
                 else
                 {
+                    //Om man skriver något ologiskt så kommer man att få en varning, men det är oändligt med varningar i mitt spel :)
                     Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine($"Can not process \"{answer}\" into an answer!");
                     System.Threading.Thread.Sleep(1000);
@@ -93,6 +103,8 @@ namespace Fighting2_TheRiseOfSerializing
 
         static bool YesOrNo(string prompt)
         {
+            //Ett enkelt sätt att fråga användaren en y/n fråga. Prompt är vad som ska visas som fråga
+            //Side Note: Användes tyvärr inte ofta :/
             Console.WriteLine(prompt);
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine("(y/n)");
@@ -111,6 +123,7 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void InspectGame()
         {
+            //InspectGame ska vara till för användaren att veta vad för karaktärer det finns i spelet, vilka items man kan skaffa etc.
             string rawData = File.ReadAllText(@"..\data.json");
             PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
             ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData);
@@ -119,6 +132,7 @@ namespace Fighting2_TheRiseOfSerializing
 
             while (true)
             {
+                //Man ska kunna välja mellan karaktär och items, beroende på vad man vill se
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("Welcome to the game inspector tool!");
                 Console.WriteLine("Would you like to see characters (C) or items (I)?");
@@ -128,6 +142,7 @@ namespace Fighting2_TheRiseOfSerializing
                 string answer = Console.ReadLine();
                 if (answer.ToLower() == "c")
                 {
+                    //Tar bort all text och sen visar varje karaktär och deras child-element
                     Console.Clear();
 
                     foreach (Player p in deserializedPlayerData.players)
@@ -150,6 +165,7 @@ namespace Fighting2_TheRiseOfSerializing
                 }
                 else if (answer.ToLower() == "i")
                 {
+                    //Det finns deffensive, offensive och shop items. Här får man välja vilken man ska displaya med en page nummer variabel
                     var ch = ConsoleKey.A;
                     int page = 0;
                     Console.Clear();
@@ -160,6 +176,7 @@ namespace Fighting2_TheRiseOfSerializing
                         switch (page)
                         {
                             case 0:
+                                //Om sidan är lika med 0 ("case 0:") så visas shop items.
                                 Console.WriteLine("Items:");
                                 Console.WriteLine();
                                 foreach (Item i in deserializedShopItems.items.items)
@@ -177,6 +194,7 @@ namespace Fighting2_TheRiseOfSerializing
                                 }
                                 break;
                             case 1:
+                                //Om sidan är lika med 1 ("case 1:") så visas defensive items.
                                 Console.WriteLine("Defensive consumables:");
                                 foreach (Defensive c in deserializedShopDefensive.defensive.defensive)
                                 {
@@ -193,6 +211,7 @@ namespace Fighting2_TheRiseOfSerializing
                                 }
                                 break;
                             case 2:
+                                //Om sidan är lika med 2 ("case 2:") så visas offensive items.
                                 Console.WriteLine("Offensive consumables:");
                                 foreach (Offensive c in deserializedShopOffensive.offensive.offensive)
                                 {
@@ -210,6 +229,8 @@ namespace Fighting2_TheRiseOfSerializing
                                 break;
                         }
 
+                        //Eftersom vi alltid vill visa vilken sida och kontrollerna i menyn så kan det stå längst ner. Det gör mindre spaghetti och mindre kod som är bra
+                        //(Det går då vi inte använder specifika variablar i den här biten)
                         Console.WriteLine();
                         Console.WriteLine($"You are on page {page + 1}/3");
                         Console.WriteLine("Press the arrow keys to switch viewed page or Enter to exit");
@@ -255,10 +276,12 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void StartGame()
         {
+            //StartGame ska vara en portal till själva main spelet där all logik till spelet är
             var ch = ConsoleKey.B;
 
             while (true)
             {
+                //Välkommnar spelaren till arenan och navigation härifrån. Den rekomenderar också InspectGame verktyget :)!
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("Welcome to the arena!");
                 Console.WriteLine("Here you play for rewards and are able to progress through the story!");
@@ -269,28 +292,25 @@ namespace Fighting2_TheRiseOfSerializing
 
                 if (ch == ConsoleKey.I)
                 {
+                    //InspectGame startas då man behövde utbilda sig lite mer om spelet
                     Console.Clear();
                     InspectGame();
                 }
                 else if (ch == ConsoleKey.L)
                 {
+                    //LoadGame hade problem som är fixat i den här commiten, titta history (/commits) för att se problemet
                     Console.Clear();
-                    bool succesfulLoad = false;
-                    succesfulLoad = LoadGame();
-                    if (!succesfulLoad)
-                    {
-                        Console.WriteLine("Unable to load saved data!");
-                        Console.WriteLine("A new game was started! (Old file data at: \"old-save.txt\" in dir)");
-                        NewGame();
-                    }
+                    LoadGame();
                 }
                 else if (ch == ConsoleKey.N)
                 {
+                    //Ett NewGame startar 
                     Console.Clear();
                     NewGame();
                 }
                 else if (ch == ConsoleKey.M)
                 {
+                    //Om man så önskar får man gå tillbaka till menyn
                     Console.Clear();
                     Menu(true);
                 }
@@ -306,26 +326,27 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void NewGame()
         {
-            Player chosenCharacter = new Player(); //Man får error om det inte är en new player, för ofc så tror inte visual att while(chosenCharacter!=Player) liknande loop ger en annan sak än player till slut...
-            int difficulty = 1;
+            //Man får error om det inte är en new player, anledning:
+            //ofc så tror inte visual att while(chosenCharacter!=Player) liknande loop ger en annan sak än en player till slut...
+
+            //Överlag vad som finns här: variablar till delen
+            Player chosenCharacter = new Player(); int difficulty = 1;
             List<Item> inventory = new List<Item>();
             List<Object> consumables = new List<Object>();
 
             string rawData = File.ReadAllText(@"..\data.json");
             PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
+            Player[] players = deserializedPlayerData.players;
+
             ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData);
             ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData);
             ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData);
-
-            Player[] players = deserializedPlayerData.players;
-
-            //DEBUG for when Test() be finished!
-            //Player f = Consumables(players[0]);
 
             ItemCollection shopItems = deserializedShopItems.items;
             OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
             DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
 
+            //Start på NewGame()
             Console.WriteLine("Welcome to a new game, a new beginning!");
             Console.WriteLine("Your next step to creating your journey is picking a character:");
 
@@ -335,6 +356,7 @@ namespace Fighting2_TheRiseOfSerializing
 
             while (chosing)
             {
+                //Här får man välja vilken karaktär man ska spela som
                 playerNumber = 1;
                 foreach (Player p in players)
                 {
@@ -394,12 +416,16 @@ namespace Fighting2_TheRiseOfSerializing
 
         static Player Game(Player c, int diff)
         {
+            //Här är hela spelet i sig. Game() är mest en navigations-portal 
             bool alive = true;
             var ch = ConsoleKey.B;
 
             while (alive)
             {
+                //Starta en runda med Round()
                 c = Round(diff, c);
+
+                //Checka om man lever eller är död
                 switch (int.Parse(c.hp))
                 {
                     case < 0:
@@ -409,8 +435,11 @@ namespace Fighting2_TheRiseOfSerializing
                         alive = true;
                         break;
                 }
+
+                //Beroende på om man lever ska vi:
                 if (alive)
                 {
+                    //Öka svårighet, fråga om man ska fortsätta 
                     diff++;
                     Console.WriteLine("You completed a round! Do you want to continue (C)?");
                     ch = Console.ReadKey(false).Key;
@@ -421,17 +450,21 @@ namespace Fighting2_TheRiseOfSerializing
                 }
                 else
                 {
+                    //Göra det extra tydligt att man dog RIP
                     Console.WriteLine("You died!");
                 }
             }
-
+            //Skicka tillbaka spelaren, det är så att vi kan se vad som hänt medans man spelade (skillnad i hp, pengar etc)
             return c;
         }
 
         static Player Round(int difficulty, Player character)
         {
+            //Här är var de olika fighting rundorna utspelas
             Random generator = new Random();
             Enemy[] enemies;
+
+            //Här är ställen man kan möta fiender, låter coolt så ska absolut ha det!
             List<string> arenas = new List<string> {
                 "by an old house",
                 "outside the village",
@@ -441,18 +474,21 @@ namespace Fighting2_TheRiseOfSerializing
                 "to a boss"
             };
 
+            //"spread" ska vara som en variabel som visar hur många enemies det kan vara, och om det blir flera ska de vara enklare
+            //(Flera = lättare), (Mindre = svårare) ::THAT IS:: (BALANCING!)
             int spread = generator.Next(1, difficulty);
             enemies = new Enemy[spread];
-
             for (int i = 0; i < spread; i++)
             {
                 enemies[i] = new Enemy();
                 enemies[i].baseHP /= generator.Next(1, spread);
             }
 
+            //Visar vart man möter fienden, inte att det ändrar saker än att det ger atmosfär
             Console.WriteLine($"You encounter strange activity while walking {arenas[difficulty]}.");
             Console.WriteLine("You realise it is hostile activity, you now need to fight for survival!");
 
+            //Vissa alla fiender man möter, namn, attack och HP
             foreach (Enemy e in enemies)
             {
                 Console.WriteLine();
@@ -463,9 +499,9 @@ namespace Fighting2_TheRiseOfSerializing
                 Console.WriteLine($"HP: {e.baseHP}");
                 Console.WriteLine();
             }
-
             Console.ForegroundColor = ConsoleColor.White;
 
+            //Visar ens egna karaktär, programmet frågar också om man vill gå in i UseConsumable menyn
             Console.WriteLine($"{character.name} current HP: {character.hp} / {GetMaxHP(character)}");
             Console.WriteLine();
             Console.WriteLine("If you are low on HP or need extra damage from items, open consumables.");
@@ -474,36 +510,39 @@ namespace Fighting2_TheRiseOfSerializing
             Console.Clear();
             if (ch == ConsoleKey.C)
             {
+                //UseConsumables ger tillbaka en "Tuple" som det heter, den innehåller nya informationen:
+                //Nya informationen: Ny HP på sin karaktär, hur mycket consumable damage man gjorde på fienderna
                 (Player returnedPlayer, Enemy[] returnedEnemies) c = UseConsumables(character, enemies, difficulty);
                 character = c.returnedPlayer;
                 enemies = c.returnedEnemies;
                 Console.WriteLine("Press any key to continue!");
                 Console.ReadKey();
             }
-
             Console.Clear();
 
+            //Fighten startar officiellt!
             Console.WriteLine("The fight will now begin! You are the first to strike.");
             Console.WriteLine("\n");
 
-            //enemy setups
+            //Variablar som kommer användas/behövas
             bool enemiesAlive = true;
-
-            //character - (player) - setups
             string[] minMaxDamageString = character.attack.Split("-");
+            int substage = 1;
             int[] minMaxDamageInt = new int[2];
+
             for (int i = 0; i < minMaxDamageString.Length; i++)
             {
                 minMaxDamageInt[i] = int.Parse(minMaxDamageString[i]);
             }
 
-            int substage = 1;
-
             while (enemiesAlive && int.Parse(character.hp) > 0)
             {
+                //While är så länge fiender lever eller att karaktären har över 0 HP
+                //Logik här är att om någon fiende eller spelaren dör kan den inte göra damage (även om de är i samma "substage")
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
                 Console.WriteLine($"Round {substage} starts!");
 
+                //Fiender attackerAS först
                 foreach (Enemy e in enemies)
                 {
                     int chanceToHit = generator.Next(0, 101);
@@ -521,6 +560,7 @@ namespace Fighting2_TheRiseOfSerializing
                     }
                 }
 
+                //Spelaren attackerar sen
                 foreach (Enemy e in enemies)
                 {
                     if (e.baseHP > 0)
@@ -548,7 +588,7 @@ namespace Fighting2_TheRiseOfSerializing
                     }
                 }
 
-                //Quick check if any enemy is alive - assuming everyone is dead. But if a hp is greater than zero it turns true
+                //Vi antar att alla fiender är döda, men om någon fiende har över 0 HP så lever minst en fiende, loopen fortsätter då!
                 bool anyEnemyAlive = false;
                 foreach (Enemy e in enemies)
                 {
@@ -565,6 +605,7 @@ namespace Fighting2_TheRiseOfSerializing
 
             if (enemiesAlive)
             {
+                //Om man är död visas det här (Det är om enemiesAlive är sant också, men det borde det verkligen vara!)
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("You lost the battle!");
                 Console.WriteLine("Now you sadly have to try again, press any key to continue.");
@@ -573,6 +614,7 @@ namespace Fighting2_TheRiseOfSerializing
             }
             else
             {
+                //Om man vann visas det här, den räknar ut slumpat guld och går tillbaka till Game() loopen
                 int gold = 0;
                 foreach (Enemy e in enemies)
                 {
@@ -602,6 +644,7 @@ namespace Fighting2_TheRiseOfSerializing
 
         static void AppendToSave((string dID, bool dBought) d, (string oID, bool oBought) o, (string iID, bool iBought) i)
         {
+            //AppendToSave() används för att lägga till saker man köpt i Shop()
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
             string[] save = new string[4];
 
@@ -659,6 +702,8 @@ namespace Fighting2_TheRiseOfSerializing
         }
         static void SaveGame(Player c, int d)
         {
+            //SaveGame(Player c, int d) används för att spara spelaren, men den ska inte röra items eller consumables. Det är om man skapar en ny karaktär men har moddat vad för items man ska ha i början av spelet. 
+            //Side Note: När man startar spelet ska man helst ändå inte ha några items eller consumables
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
             string[] save = new string[4];
 
@@ -671,6 +716,7 @@ namespace Fighting2_TheRiseOfSerializing
         }
         static void SaveGame(Player c, int d, string dataLine1, string dataLine2, string dataLine3)
         {
+            //SaveGame(Player c, int d, string dataLine1, string dataLine2, string dataLine3) är till för när man använder consumables, då behöver man updatera HP, pengar, items, offensive, defensive. Då frågar man efter alla linjer
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
             string[] save = new string[4];
 
@@ -684,27 +730,28 @@ namespace Fighting2_TheRiseOfSerializing
 
         static Player Shop(Player c)
         {
+            //Shop() är en "substage" på Game() då man får gå in mellan Round()'s' och köpa items som man kan använda i UseConsumable()
+            //Variablar som kommer användas skrivs in här
             string[] saveData = File.ReadAllLines(@"..\save.txt");
             string rawData = File.ReadAllText(@"..\data.json");
+            Random gen = new Random();
             ShopItems deserializedShopItems = JsonSerializer.Deserialize<ShopItems>(rawData); ItemCollection shopItems = deserializedShopItems.items;
             ShopOffensive deserializedShopOffensive = JsonSerializer.Deserialize<ShopOffensive>(rawData); OffensiveCollection offensiveItems = deserializedShopOffensive.offensive;
             ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData); DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
 
+            //För att veta vad vi kan visa har vi "availabilty...", "collection" är alla random items, "bought..." är vilka som är köpta och "itemID" är alla ID på olika items. 
+            //Side Note: Man kan ha tuple av tuple av tuple etc etc, men jag tycker det här kan bli enklare att läsa.
             (bool d, bool o, bool i) availabilityOfCollection;
             (Defensive, Offensive, Item) collection;
             (bool d, bool o, bool i) boughtFromCollection = (false, false, false);
-
-            Random gen = new Random();
-
-
             (int d, int o, int i) itemID = (gen.Next(0, defensiveItems.defensive.Count), gen.Next(0, offensiveItems.offensive.Count), gen.Next(0, shopItems.items.Count));
             collection.Item1 = defensiveItems.defensive[itemID.d];
             collection.Item2 = offensiveItems.offensive[itemID.o];
             collection.Item3 = shopItems.items[itemID.i];
 
-            //I UseConsumable() menyn så har jag en readkey, det gör enklare för mig OCH gör så att man inte kan ha mer än 0-9 items. 
-            //Så för att göra så att man inte fixar mer items än man kan ha så finns det en check om man kan köpa eller inte!
-            //Det är också < istället för <= för att man inte ska kunna gå över 10 items. *trial and error correction*
+            //Varför vi har en availability är för att i UseConsumable() menyn så har jag en readkey, det gör enklare OCH gör så att man inte kan ha mer än 0-9 items. 
+            //Så för att göra så att man inte fixar mer items än vad man kan använda så finns det en check om man kan köpa eller inte! (av item limit)
+            //Side Note: Det är '<' istället för '<=' för att man inte ska kunna gå över 10 items. *trial and error correction*
             if (saveData[1].Length < 10)
             {
                 availabilityOfCollection.d = true;
@@ -721,13 +768,16 @@ namespace Fighting2_TheRiseOfSerializing
             {
                 availabilityOfCollection.o = false;
             }
-            //Kan stacka items oändligt!
+
+            //Items ska gå att stacka oändligt! IN THEORY!
+            //Så den kommer alltid att vara available
             availabilityOfCollection.i = true;
 
             bool done = false;
             var ch = ConsoleKey.B;
             while (!done && !(boughtFromCollection.d && boughtFromCollection.o && boughtFromCollection.i))
             {
+                //Här börjar 
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("This is the shop menu! Here you can use your money to gain advantage over oponents.");
@@ -741,6 +791,7 @@ namespace Fighting2_TheRiseOfSerializing
                 Console.WriteLine("Press (E) to exit or you can buy:");
                 Console.ForegroundColor = ConsoleColor.Yellow;
 
+                //Kommande if satser till rad ~850 är för att se om man köpt, om man får köpa etc
                 if ((int.Parse(c.money) >= int.Parse(collection.Item1.cost) || boughtFromCollection.d))
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -804,9 +855,12 @@ namespace Fighting2_TheRiseOfSerializing
                     Console.WriteLine(collection.Item3.description);
                 }
 
+
+                //Nu när vi har visat all nödvändig info, nu frågar vi användaren vad den vill göra
                 ch = Console.ReadKey(false).Key;
                 Console.Clear();
 
+                //Om man har köpt ett item vill jag att det ska visas i grön färg i 1 sekund så att man vet man lyckats använda programmet rätt!
                 Console.ForegroundColor = ConsoleColor.Green;
                 if (ch == ConsoleKey.D && int.Parse(c.money) >= int.Parse(collection.Item1.cost) && !boughtFromCollection.d)
                 {
@@ -836,6 +890,11 @@ namespace Fighting2_TheRiseOfSerializing
                 }
             }
 
+
+            //Det finns 2 anledningar till varför man kan lämna affären
+            //1: Man har slut på items att köpa
+            //2: Man har gått ut ur affären
+            //Båda har lite olika saker som kommer hända respektive "case"
             if (boughtFromCollection.d && boughtFromCollection.o && boughtFromCollection.i)
             {
                 Console.WriteLine("You have bought all items in the store!");
@@ -856,18 +915,23 @@ namespace Fighting2_TheRiseOfSerializing
             }
         }
 
-        static bool LoadGame()
+        static void LoadGame()
         {
+            //LoadGame handlar om att ladda spelet
             string[] data = File.ReadAllLines(@"..\save.txt");
-            bool success = true;
             if (data[0].Contains("-") || data[0].Length < 1)
             {
-                success = false;
+                //Vi märker att det inte finns något namn på spelaren, alltså omöjligt att veta vad för karaktär vi använder, så vi startar ett nytt spel direkt!
                 Console.WriteLine("The save is corrupted or can't load! Starting new game.");
+                Console.WriteLine("Press any key to continue to a new game!");
+                Console.ReadKey();
+                Console.Clear();
                 NewGame();
             }
             else
             {
+                //Om det finns någon data på den raden vi behöver så kan vi försöka ladda in all data i en karaktär och starta spelet
+                //Jag tror att det blir en error om man går förbi första steget. T.ex skriver "--" första raden i "save.txt". Men då är man värd kraschen...
                 for (int i = 1; i < data.Length; i++)
                 {
                     if (data[i].Length < 1 || data[i].Contains("-"))
@@ -897,12 +961,11 @@ namespace Fighting2_TheRiseOfSerializing
 
                 Game(p, difficulty);
             }
-
-            return success;
         }
 
         static (Player, Enemy[]) UseConsumables(Player p, Enemy[] e, int difficulty)
         {
+            //UseConsumable var det svåra i det här projektet, det är mycket kod som kan förbättras just här
             string[] loadedData = File.ReadAllLines(@"..\save.txt");
             string rawData = File.ReadAllText(@"..\data.json");
 
@@ -919,24 +982,29 @@ namespace Fighting2_TheRiseOfSerializing
             ShopDefensive deserializedShopDefensive = JsonSerializer.Deserialize<ShopDefensive>(rawData); DefensiveCollection defensiveItems = deserializedShopDefensive.defensive;
 
 
-            //Jag kan göra det lite sketchy och räkna med direkta människo värden. Det fungerar då [1] är första raden vi använder  
+            //Jag kan göra det lite sketchy och räkna med direkta människo värden. Det fungerar då [1] är första raden vi använder
+            //Beginners Note: Eftersom [0] är 1'a objektet i en array så är det sketchy.  
             int page = 1;
             bool done = false;
             var tempChar = ConsoleKey.B;
             double consumableTotalDamage = 0;
             double consumableTotalHeal = 0;
-
             Console.Clear();
+
             while (!done)
             {
+                //Så länge man inte är klar så kommer vi loopa
                 switch (page)
                 {
+                    //Switch page är att vi tittar vad för Items som ska visas, som användaren sen kan använda
                     case 1:
                         if (!allDefensiveItemsCopy.Contains("-") || !allDefensiveItemsCopy.Contains(""))
                         {
                             tempChar = ConsoleKey.B;
                             while (tempChar != ConsoleKey.LeftArrow && tempChar != ConsoleKey.RightArrow && tempChar != ConsoleKey.E)
                             {
+                                //Så länge man inte klickar knappar som tyder på att användaren vill avsluta menyn ska man kunna speedrun'a sina consumables
+                                //Alltså att man inte måste gå in varje gång i menyn för att använda en ny consumable utan hela tiden kan använda en ny. Dynamisk UI kanske är rätt ord?
                                 Console.WriteLine("Your defensive items are:\n");
 
                                 int index = 0;
@@ -984,7 +1052,7 @@ namespace Fighting2_TheRiseOfSerializing
                                     done = true;
                                 }
 
-                                //eftersom nummer i consoleKey har ett D framför sig..., så måste man ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2+ karaktärer)
+                                //eftersom nummer i consoleKey har ett D framför sig..., så måste man ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2 karaktärer stort [D0-D9])
                                 int tempInt;
                                 string stringOfTempChar = tempChar.ToString();
                                 if (stringOfTempChar.Length == 2)
@@ -1006,6 +1074,7 @@ namespace Fighting2_TheRiseOfSerializing
                         }
                         else
                         {
+                            //Användaren har inga consumables att display'a
                             loadedData[1] = "-";
                             Console.Clear();
                             Console.WriteLine("You have nothing here! It is empty or corrupted.");
@@ -1046,6 +1115,7 @@ namespace Fighting2_TheRiseOfSerializing
 
 
                     case 2:
+                        //Visar sida två vilket är offensive consumables
                         if (!allOffensiveItemsCopy.Contains("-") || allOffensiveItemsCopy.Length < 1)
                         {
                             tempChar = ConsoleKey.B;
@@ -1098,7 +1168,7 @@ namespace Fighting2_TheRiseOfSerializing
                                     done = true;
                                 }
 
-                                //eftersom nummer i consoleKey har ett D framför sig..., så måste man ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2+ karaktärer)
+                                //eftersom nummer i consoleKey har ett D framför sig..., så måste man ta bort D från nummret (då nummret kommer efteråt, och jag gissar att man har skrivit ett nummer om det är 2 karaktärer stort [D0-D9])
                                 int tempInt;
                                 string stringOfTempChar = tempChar.ToString();
                                 if (stringOfTempChar.Length == 2)
@@ -1159,6 +1229,7 @@ namespace Fighting2_TheRiseOfSerializing
 
 
                     case 3:
+                        //Den här menyn är lite anorlunda då man inte kan comsume'a sina items, den här visar bara vilka items man har och vad de gör
                         if (!allItemItemsCopy.Contains("-") || allItemItemsCopy.Length < 1)
                         {
                             tempChar = ConsoleKey.B;
@@ -1227,7 +1298,9 @@ namespace Fighting2_TheRiseOfSerializing
                 Console.Clear();
             }
 
-            foreach (int i in usedDefensiveItemsID)  //item apply damage and heal 
+            //Varje consumable vi har velat använda sparas i Used----ItemsID beroende på vad för kategori
+            //Så för varje ID på item (därför "save.txt" är 'sträng' med hur man skriver i den) så kommer det ID's paired item's stats att påverka outputet
+            foreach (int i in usedDefensiveItemsID)
             {
                 consumableTotalHeal += int.Parse(defensiveItems.defensive[i].baseHP);
                 if (int.Parse(defensiveItems.defensive[i].percentHP) > 0)
@@ -1243,7 +1316,8 @@ namespace Fighting2_TheRiseOfSerializing
                 p.hp = maxHP.ToString();
             }
 
-            foreach (int i in usedOffensiveItemsID)  //item apply damage and heal 
+            //Samma som ovan fast det är för offensive consumables
+            foreach (int i in usedOffensiveItemsID)
             {
                 consumableTotalDamage += int.Parse(offensiveItems.offensive[i].baseAttack);
                 if (int.Parse(offensiveItems.offensive[i].percentAttack) > 0)
@@ -1256,7 +1330,8 @@ namespace Fighting2_TheRiseOfSerializing
                 enemy.baseHP -= Convert.ToInt32(consumableTotalDamage);
             }
 
-
+            //Vi vill spara spelet så att när man har använt sina items så kommer de inte finnas kvar i filen
+            //Det gör också så att vi sparar money och hp på köpet i character
             SaveGame(p, difficulty, allOffensiveItemsCopy, allDefensiveItemsCopy, allItemItemsCopy);
 
             Console.Clear();
@@ -1266,6 +1341,8 @@ namespace Fighting2_TheRiseOfSerializing
 
         static int GetMaxHP(Player p)
         {
+            //Eftersom ordningen på ens items i filen kommer göra skillnad på hur mycket man faktiskt har i MAXHP är det rätt så viktigt att man 100% använder samma metod att räkna ut det varje gång.
+            //Beginners Note: Funktioner som de här är de viktigaste! 
             string rawData = File.ReadAllText(@"..\data.json");
             string items = File.ReadAllLines(@"..\save.txt")[3];
             PlayerCollection deserializedPlayerData = JsonSerializer.Deserialize<PlayerCollection>(rawData);
@@ -1274,6 +1351,8 @@ namespace Fighting2_TheRiseOfSerializing
             int baseHPForCharacter = 0;
             int maxHP;
 
+            //Vi har alla presets i deserializedPlayerData.players, så vi hittar vilken som har ett matchande namn och sen kopierar rätt karaktärs stats :P
+            //Side Note: Man kan istället ha sparat Player indexet från "data.json" i "save.txt", men att ha ett namn i den var roligare att arbeta med :)
             foreach (Player playerPresets in deserializedPlayerData.players)
             {
                 if (playerPresets.name == p.name)
@@ -1283,7 +1362,8 @@ namespace Fighting2_TheRiseOfSerializing
                 }
             }
 
-            //Det här gör så att ordningen som man får items i kommer ändra hur mycket HP man får i slutet. Men det kan vara en strategi som bara de bästa vet, de som vill speedruna det här!
+            //Det här gör så att ordningen som man får items i kommer ändra hur mycket HP man får i slutet, men det är lugnt då det är alltid samma uträkning och inte olika på olika ställen! 
+            //Side Note: Det kan vara en strategi som bara de bästa vet, de som vill speedruna det här spelet!
             maxHP = baseHPForCharacter;
             foreach (char i in items)
             {
@@ -1298,7 +1378,7 @@ namespace Fighting2_TheRiseOfSerializing
     }
 
 
-
+    //Nedanför är alla klasser för deserializing av "data.json" filen!
     public class Enemy
     {
         static Random generator = new Random();
